@@ -1,5 +1,8 @@
 const mongoose = require("mongoose");
 //create a schema
+const options = {
+  toJSON:{virtuals:true}
+}
 const tourSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -64,7 +67,11 @@ const tourSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-});
+},options);
+//create virtuals
+tourSchema.virtual('durationWeeks').get(function() {
+  return Math.round(this.duration / 7);
+})
 //create a Model
 const Tour = mongoose.model("Tour", tourSchema);
 module.exports = Tour;
