@@ -1,6 +1,6 @@
 const { normalizeOperators, normalizeQueryObject } = require("../query");
 const { makeMap } = require("../utils");
-class API_Features {
+class APIFeatures {
   constructor(query, queryString) {
     this.query = query;
     this.queryString = queryString;
@@ -12,7 +12,7 @@ class API_Features {
       this.queryString,
       reservedQueryParams
     );
-    //cahnge lte,gte,gt,lt => $lte,$gre,$lt,$gt
+    //change lte,gte,gt,lt => $lte,$gre,$lt,$gt
     normalizedQueryObject = normalizeOperators(normalizedQueryObject);
     this.query = this.query.find(normalizedQueryObject);
     return this;
@@ -43,4 +43,4 @@ class API_Features {
     return this;
   }
 }
-module.exports = API_Features;
+module.exports = APIFeatures;

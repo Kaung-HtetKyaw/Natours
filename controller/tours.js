@@ -1,12 +1,12 @@
 const rootDir = require("../utils/path");
-const API_Features = require("../utils/api/API_Features");
+const APIFeatures = require("../utils/api/APIFeatures");
 //Model
 const Tour = require(`${rootDir}/model/Tours`);
 
 //Posts route handlers
 exports.getAllTours = async (req, res) => {
   try {
-    const features = new API_Features(Tour.find(), req.query)
+    const features = new APIFeatures(Tour.find(), req.query)
       .filter()
       .sort()
       .limitFields()
@@ -89,4 +89,10 @@ exports.deleteTour = async (req, res) => {
       message: error,
     });
   }
+};
+exports.aliasTopTours = (req, res, next) => {
+  req.query.limit = 5;
+  req.query.sort = "-ratingsAverage,price";
+  req.query.fields = "name,price,ratingsAverage,summary,difficulty";
+  next();
 };
