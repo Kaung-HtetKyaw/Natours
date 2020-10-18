@@ -17,8 +17,11 @@ app.use("/api/v1/tours", tourRouter);
 app.use("/api/v1/users", userRouter);
 
 //catch 404 error ⚠
-app.use((req, res) => {
-  res.status(404).send(`<h1>Page Not Found.</h1>`);
+app.all("*", (req, res) => {
+  res.status(404).json({
+    status: 404,
+    message: `Cannont find ${req.originalUrl} on this server`,
+  });
 });
 
 //export the app intance for starting server
