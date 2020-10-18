@@ -17,10 +17,19 @@ app.use("/api/v1/tours", tourRouter);
 app.use("/api/v1/users", userRouter);
 
 //catch 404 error ⚠
-app.all("*", (req, res) => {
-  res.status(404).json({
-    status: 404,
-    message: `Cannont find ${req.originalUrl} on this server`,
+app.all("*", (req, res, next) => {
+  const error = new Error(`Cannont find ${req.originalUrl} on this server`);
+  error.statusCode = error.statusCode || 500;
+  error.status = error.status || "error";
+  next(error);
+});
+//global error handling middleware
+app.use((error, req, res, next) => {
+  error.statusCode = error.statusCode || 500;
+  error.status = error.status || "error";
+  res.status(error.statusCode).json({
+    status: error.status,
+    message: error.message,
   });
 });
 
