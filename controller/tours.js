@@ -1,6 +1,7 @@
 const rootDir = require("../utils/path");
 const { catchAsyncError } = require("../utils/error");
 const APIFeatures = require("../utils/api/APIFeatures");
+const AppError = require("../utils/api/AppError");
 //Model
 const Tour = require(`${rootDir}/model/Tours`);
 
@@ -24,6 +25,10 @@ exports.getAllTours = catchAsyncError(async (req, res, next) => {
 });
 exports.getTour = catchAsyncError(async (req, res, next) => {
   const tour = await Tour.findById(req.params.id);
+  if (!tour) {
+    next(new AppError(`Cannot find tour with id ${req.params.id}`, 404));
+    return;
+  }
   res.status(200).json({
     status: "success",
     data: { tour },
@@ -41,26 +46,33 @@ exports.updateTour = catchAsyncError(async (req, res, next) => {
     new: true,
     runValidators: true,
   });
+  if (!tour) {
+    next(new AppError(`Cannot find tour with id ${req.params.id}`, 404));
+    return;
+  }
   res.status(200).json({
     status: "success",
     data: tour,
   });
 });
 exports.deleteTour = catchAsyncError(async (req, res, next) => {
-  await Tour.findByIdAndDelete(req.params.id, {}, () => {
-    console.log("Deleted a Post 😓 ");
+  const tour = await Tour.findByIdAndDelete(req.params.id, {}, () => {
+    if (!tour) {
+      next(new AppError(`Cannot find tour with id ${req.params.id}`, 404));
+      return;
+    }
     res.status(204).json({
       status: "success",
       data: null,
     });
   });
 });
-exports.aliasTopTours = catchAsyncError((req, res, next) => {
+exports.aliasTopTours = (req, res, next) => {
   req.query.limit = 5;
   req.query.sort = "-ratingsAverage,price";
   req.query.fields = "name,price,ratingsAverage,summary,difficulty";
   next();
-});
+};
 exports.getTourStats = catchAsyncError(async (req, res) => {
   const tours = await Tour.aggregate([
     {
