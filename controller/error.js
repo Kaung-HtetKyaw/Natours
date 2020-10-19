@@ -8,7 +8,7 @@ module.exports = (error, req, res, next) => {
   } else if (process.env.NODE_ENV == "production") {
     let normalizedError = Object.assign({}, error);
     if (error.stack.split(":")[0] == "CastError") {
-      normalizedError = handleCastError(error);
+      normalizedError = handleCastErrorDB(error);
     }
     sendErrorProd(normalizedError, res);
   }
@@ -41,7 +41,7 @@ function sendErrorProd(error, res) {
   }
 }
 
-function handleCastError(error) {
+function handleCastErrorDB(error) {
   const message = `Invalid ${error.path}: ${error.value}`;
   return new AppError(message, 400);
 }
