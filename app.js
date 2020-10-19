@@ -1,6 +1,9 @@
 const express = require("express");
 const morgam = require("morgan");
 
+const AppError = require("./utils/api/AppError");
+const globalErrorHandler = require("./controller/error");
+
 const tourRouter = require("./routes/tours");
 const userRouter = require("./routes/users");
 
@@ -18,20 +21,10 @@ app.use("/api/v1/users", userRouter);
 
 //catch 404 error ⚠
 app.all("*", (req, res, next) => {
-  const error = new Error(`Cannont find ${req.originalUrl} on this server`);
-  error.statusCode = error.statusCode || 500;
-  error.status = error.status || "error";
-  next(error);
+  next(new AppError(`Cannont find ${req.originalUrl} on this server`, 404));
 });
 //global error handling middleware
-app.use((error, req, res, next) => {
-  error.statusCode = error.statusCode || 500;
-  error.status = error.status || "error";
-  res.status(error.statusCode).json({
-    status: error.status,
-    message: error.message,
-  });
-});
+app.use(globalErrorHandler);
 
 //export the app intance for starting server
 module.exports = app;
