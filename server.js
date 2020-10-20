@@ -1,8 +1,14 @@
 const dotenv = require("dotenv");
 dotenv.config({ path: "./config.env" });
 const mongoose = require("mongoose");
-const app = require("./app");
 
+//! put this at the top before our app is initialized
+process.on("uncaughtException", (error) => {
+  console.error(error.name, error.message);
+  console.log("UNCAUGHT EXCEPTIONS! Shutting down.....🔐");
+  process.exit(1);
+});
+const app = require("./app");
 //connect to mongodb
 const DB = process.env.DATABASE.replace(
   "<PASSWORD>",
