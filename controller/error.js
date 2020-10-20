@@ -7,11 +7,14 @@ module.exports = (error, req, res, next) => {
     sendErrorDev(error, res);
   } else if (process.env.NODE_ENV == "production") {
     let normalizedError = Object.assign({}, error);
-    if (error.stack.split(":")[0] == "CastError") {
+    if (error.name == "CastError") {
       normalizedError = handleCastErrorDB(error);
     }
     if (error.code == 11000) {
       normalizedError = handleDuplicationErrorDB(error);
+    }
+    if (error.name == "ValidationError") {
+      normalizedError = handleValidationErrorDB(error);
     }
     sendErrorProd(normalizedError, res);
   }
@@ -50,5 +53,13 @@ function handleCastErrorDB(error) {
 
 function handleDuplicationErrorDB(error) {
   const message = `Duplicate field value:${error.keyValue.name} is already in use.`;
+  return new AppError(message, 400);
+}
+
+function handleValidationErrorDB(error) {
+  const errors = Object.values(error.errors)
+    .map((el) => el.message)
+    .join(". ");
+  const message = `Invalid input data. ${errors}`;
   return new AppError(message, 400);
 }
