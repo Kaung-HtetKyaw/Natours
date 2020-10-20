@@ -10,12 +10,14 @@ module.exports = (error, req, res, next) => {
     if (error.stack.split(":")[0] == "CastError") {
       normalizedError = handleCastErrorDB(error);
     }
+    if (error.code == 11000) {
+      normalizedError = handleDuplicationErrorDB(error);
+    }
     sendErrorProd(normalizedError, res);
   }
 };
 
 function sendErrorDev(error, res) {
-  console.log(error);
   res.status(error.statusCode).json({
     status: error.status,
     message: error.message,
@@ -43,5 +45,10 @@ function sendErrorProd(error, res) {
 
 function handleCastErrorDB(error) {
   const message = `Invalid ${error.path}: ${error.value}`;
+  return new AppError(message, 400);
+}
+
+function handleDuplicationErrorDB(error) {
+  const message = `Duplicate field value:${error.keyValue.name} is already in use.`;
   return new AppError(message, 400);
 }
