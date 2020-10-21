@@ -70,7 +70,12 @@ exports.isAuthorized = catchAsyncError(async (req, res, next) => {
       new AppError("The user belonging to this token no longer exists", 401)
     );
   }
-
+  // check password is changed after token was issued
+  if (user.passwordChangedAfterIssued(decodedToken.iat)) {
+    return next(
+      new AppError("Password was changed recently. Please log in again.", 401)
+    );
+  }
   next();
 });
 

@@ -37,6 +37,7 @@ const userSchema = new mongoose.Schema({
       message: "Password don't match",
     },
   },
+  passwordChangedAt: Date,
 });
 
 // plain text password to encrypted password
@@ -53,6 +54,17 @@ userSchema.methods.isCorrectPassword = async function (
   hashedPassword
 ) {
   return await bcrypt.compare(plainPassword, hashedPassword);
+};
+//check if password is changed after the token was issued
+userSchema.methods.passwordChangedAfterIssued = function (JWT_iat) {
+  if (this.passwordChangedAt) {
+    const pwdChangedTime = parseInt(
+      this.passwordChangedAt.getTime() / 1000,
+      10
+    );
+    return pwdChangedTime > JWT_iat;
+  }
+  return false;
 };
 
 const User = mongoose.model("User", userSchema);

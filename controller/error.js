@@ -6,7 +6,7 @@ module.exports = (error, req, res, next) => {
   if (process.env.NODE_ENV == "development") {
     sendErrorDev(error, res);
   } else if (process.env.NODE_ENV == "production") {
-    let normalizedError = Object.assign({}, error);
+    let normalizedError = { ...error, message: error.message };
     if (error.name == "CastError") {
       normalizedError = handleCastErrorDB(error);
     }
