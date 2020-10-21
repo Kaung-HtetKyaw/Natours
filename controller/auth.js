@@ -42,3 +42,23 @@ exports.login = catchAsyncError(async (req, res, next) => {
     token,
   });
 });
+
+exports.isAuthorized = catchAsyncError(async (req, res, next) => {
+  // check if token exists in http headers
+  let token;
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
+    token = req.headers.authorization.split(" ")[1];
+  }
+  if (!token) {
+    return next(
+      new AppError("You are not logged in.Please log in to get access", 401)
+    );
+  }
+  // verify the token
+
+  //check user exists
+  next();
+});

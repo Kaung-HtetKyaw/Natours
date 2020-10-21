@@ -4,6 +4,7 @@ const router = express.Router();
 const rootDir = require("../utils/path");
 
 const toursController = require(`${rootDir}/controller/tours`);
+const authController = require("../controller/auth");
 
 //posts routes📰
 router
@@ -13,7 +14,7 @@ router.route("/tour-stats").get(toursController.getTourStats);
 router.route("/monthly-plans/:year").get(toursController.getMonthlyPlans);
 router
   .route("/")
-  .get(toursController.getAllTours)
+  .get(authController.isAuthorized, toursController.getAllTours)
   .post(toursController.createNewTour);
 router
   .route("/:id")
