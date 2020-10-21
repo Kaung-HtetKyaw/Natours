@@ -52,7 +52,10 @@ function handleCastErrorDB(error) {
 }
 
 function handleDuplicationErrorDB(error) {
-  const message = `Duplicate field value:${error.keyValue.name} is already in use.`;
+  const keys = Object.keys(error.keyValue);
+  const values = Object.values(error.keyValue);
+  const errors = keys.map((key, i) => `${key}:${values[i]}`).join(", ");
+  const message = `Duplicate field ${errors} is already in use.`;
   return new AppError(message, 400);
 }
 
