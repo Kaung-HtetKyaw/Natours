@@ -1,8 +1,9 @@
 const User = require("../model/Users");
 const AppError = require("../utils/api/AppError");
+const jwt = require("jsonwebtoken");
+const { promisify } = require("util");
 
 const { catchAsyncError } = require("../utils/error");
-const { generateToken } = require("../utils/utils");
 
 exports.signUp = catchAsyncError(async (req, res, next) => {
   const newUser = await User.create({
@@ -58,7 +59,17 @@ exports.isAuthorized = catchAsyncError(async (req, res, next) => {
     );
   }
   // verify the token
-
+  const decodedToken = await promisify(jwt.verify)(
+    token,
+    process.env.JWT_SECRET
+  );
+  console.log(decodedToken);
   //check user exists
   next();
 });
+
+function generateToken(id) {
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN,
+  });
+}

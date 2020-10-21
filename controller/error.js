@@ -16,6 +16,12 @@ module.exports = (error, req, res, next) => {
     if (error.name == "ValidationError") {
       normalizedError = handleValidationErrorDB(error);
     }
+    if (error.name == "JsonWebTokenError") {
+      normalizedError = handleJWTError();
+    }
+    if (error.name == "TokenExpiredError") {
+      normalizedError = handleJWTExpiredError();
+    }
     sendErrorProd(normalizedError, res);
   }
 };
@@ -65,4 +71,12 @@ function handleValidationErrorDB(error) {
     .join(". ");
   const message = `Invalid input data. ${errors}`;
   return new AppError(message, 400);
+}
+
+function handleJWTError() {
+  return new AppError("Invalid token.Please log in again", 401);
+}
+
+function handleJWTExpiredError() {
+  return new AppError("Token expired.Please log in again", 401);
 }
