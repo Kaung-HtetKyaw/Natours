@@ -63,8 +63,14 @@ exports.isAuthorized = catchAsyncError(async (req, res, next) => {
     token,
     process.env.JWT_SECRET
   );
-  console.log(decodedToken);
-  //check user exists
+  //check user still exists
+  const user = await User.findById(decodedToken.id);
+  if (!user) {
+    return next(
+      new AppError("The user belonging to this token no longer exists", 401)
+    );
+  }
+
   next();
 });
 
