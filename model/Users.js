@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
+const { reset } = require("nodemon");
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -46,9 +48,11 @@ const userSchema = new mongoose.Schema({
     },
   },
   passwordChangedAt: Date,
+  passwordResetToken: String,
+  passwordResetExpiresAt: Date,
 });
 
-// plain text password to encrypted password
+// plain text password to encrypted password only when user create new or update the password
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   this.password = await bcrypt.hash(this.password, 12);
@@ -73,6 +77,16 @@ userSchema.methods.passwordChangedAfterIssued = function (JWT_iat) {
     return pwdChangedTime > JWT_iat;
   }
   return false;
+};
+userSchema.methods.generateResetPasswordToken = function () {
+  const resetToken = crypto.randomBytes(32).toString("hex"); // normal token which will be sent to client
+  this.passwordResetToken = crypto
+    .createHash("sha256")
+    .update(resetToken)
+    .digest("hex"); // encrypted whick will be stored in the db
+  console.log({ resetToken, passwordResetToken: this.passwordResetToken });
+  this.passwordResetExpiresAt = Date.now() + 10 * 60 * 1000; // will expires after 10 mins
+  return resetToken;
 };
 
 const User = mongoose.model("User", userSchema);

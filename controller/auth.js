@@ -92,6 +92,21 @@ exports.isAuthorized = (...roles) => {
   };
 };
 
+exports.forgotPassword = catchAsyncError(async (req, res, next) => {
+  // check if user with email exists
+  const user = await User.findOne({ email: req.body.email });
+  if (!user) {
+    return next(
+      new AppError("There is no user with email address you provided", 404)
+    );
+  }
+  // generate the reset token and store it
+  const resetToken = user.generateResetPasswordToken();
+  user.save({ validateBeforeSave: false }); // to avoid validatin again for certain fields
+  // send it to user email
+});
+exports.resetPassword = catchAsyncError(async (req, res, next) => {});
+
 function generateToken(id) {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
