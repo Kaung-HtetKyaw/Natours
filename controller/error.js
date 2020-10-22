@@ -61,7 +61,7 @@ function handleDuplicationErrorDB(error) {
   const keys = Object.keys(error.keyValue);
   const values = Object.values(error.keyValue);
   const errors = keys.map((key, i) => `${key}:${values[i]}`).join(", ");
-  const message = `Duplicate field ${errors} is already in use.`;
+  const message = `${errors} is already in use.`;
   return new AppError(message, 400);
 }
 

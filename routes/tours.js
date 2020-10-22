@@ -14,12 +14,16 @@ router.route("/tour-stats").get(toursController.getTourStats);
 router.route("/monthly-plans/:year").get(toursController.getMonthlyPlans);
 router
   .route("/")
-  .get(authController.isAuthorized, toursController.getAllTours)
+  .get(authController.isAuthenticated, toursController.getAllTours)
   .post(toursController.createNewTour);
 router
   .route("/:id")
   .get(toursController.getTour)
   .patch(toursController.updateTour)
-  .delete(toursController.deleteTour);
+  .delete(
+    authController.isAuthenticated,
+    authController.isAuthorized("admin", "lead"),
+    toursController.deleteTour
+  );
 
 module.exports = router;

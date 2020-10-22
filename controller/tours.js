@@ -56,15 +56,14 @@ exports.updateTour = catchAsyncError(async (req, res, next) => {
   });
 });
 exports.deleteTour = catchAsyncError(async (req, res, next) => {
-  const tour = await Tour.findByIdAndDelete(req.params.id, {}, () => {
-    if (!tour) {
-      next(new AppError(`Cannot find tour with id ${req.params.id}`, 404));
-      return;
-    }
-    res.status(204).json({
-      status: "success",
-      data: null,
-    });
+  const tour = await Tour.findByIdAndDelete(req.params.id);
+  if (!tour) {
+    next(new AppError(`Cannot find tour with id ${req.params.id}`, 404));
+    return;
+  }
+  res.status(204).json({
+    status: "success",
+    data: null,
   });
 });
 exports.aliasTopTours = (req, res, next) => {

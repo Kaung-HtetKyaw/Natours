@@ -44,7 +44,7 @@ exports.login = catchAsyncError(async (req, res, next) => {
   });
 });
 
-exports.isAuthorized = catchAsyncError(async (req, res, next) => {
+exports.isAuthenticated = catchAsyncError(async (req, res, next) => {
   // check if token exists in http headers
   let token;
   if (
@@ -58,7 +58,7 @@ exports.isAuthorized = catchAsyncError(async (req, res, next) => {
       new AppError("You are not logged in.Please log in to get access", 401)
     );
   }
-  // verify the token
+  // verify the token, if not valid, will thorw error automatically
   const decodedToken = await promisify(jwt.verify)(
     token,
     process.env.JWT_SECRET
@@ -76,8 +76,21 @@ exports.isAuthorized = catchAsyncError(async (req, res, next) => {
       new AppError("Password was changed recently. Please log in again.", 401)
     );
   }
+  // provide user information for next middleware
+  req.user = user;
   next();
 });
+
+exports.isAuthorized = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new AppError("You are not authorized to perform this action", 403)
+      );
+    }
+    next();
+  };
+};
 
 function generateToken(id) {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
