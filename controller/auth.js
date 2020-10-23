@@ -1,6 +1,7 @@
 const User = require("../model/Users");
 const AppError = require("../utils/api/AppError");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
 const { promisify } = require("util");
 
 const { catchAsyncError } = require("../utils/error");
@@ -103,10 +104,9 @@ exports.forgotPassword = catchAsyncError(async (req, res, next) => {
   }
   // generate the reset token and store it
   const resetToken = user.generateResetPasswordToken();
-  user.save({ validateBeforeSave: false }); // to avoid validatin again for certain fields
+  user.save({ validateBeforeSave: false }); // to avoid validating again for certain fields
 
-  // send it to user email
-  // handling potential error from sendEmail(nodemailer)
+  // send it to user email and handling potential error from sendEmail(nodemailer)
   try {
     await sendEmail(generateMailOptions(req, resetToken, user));
     res.status(200).json({
@@ -122,7 +122,35 @@ exports.forgotPassword = catchAsyncError(async (req, res, next) => {
     );
   }
 });
-exports.resetPassword = catchAsyncError(async (req, res, next) => {});
+exports.resetPassword = catchAsyncError(async (req, res, next) => {
+  // find the user with given reset token which is still valid
+  const hashedToken = crypto
+    .createHash("sha256")
+    .update(req.params.token)
+    .digest("hex");
+  const user = await User.findOne({
+    passwordResetToken: hashedToken,
+    passwordResetExpiresAt: { $gt: Date.now() },
+  });
+  // if token still valid and user exists , set the new password
+  if (!user) {
+    return next(
+      new AppError("Invalid token or Token has already expired", 400)
+    );
+  }
+  user.password = req.body.password;
+  user.confirmedPassword = req.body.confirmedPassword;
+  user.passwordResetToken = undefined;
+  user.passwordResetExpiresAt = undefined;
+  await user.save();
+
+  // return the response with new jwt token
+  const token = generateToken(user._id);
+  res.status(200).json({
+    status: "success",
+    token,
+  });
+});
 
 function generateToken(id) {
   return jwt.sign({ id }, process.env.JWT_SECRET, {

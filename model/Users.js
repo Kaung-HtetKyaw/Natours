@@ -52,11 +52,17 @@ const userSchema = new mongoose.Schema({
   passwordResetExpiresAt: Date,
 });
 
-// plain text password to encrypted password only when user create new or update the password
+// plain text password to encrypted password only when user create new
 userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
+  if (!this.isModified("password") || !this.isNew) return next();
   this.password = await bcrypt.hash(this.password, 12);
   this.confirmedPassword = undefined; // removing because dont need it anymore
+  next();
+});
+
+userSchema.pre("save", function (next) {
+  if (!this.isModified("password") || this.isNew) return next();
+  this.passwordChangedAt = Date.now() - 2000; // substracting 2s cuz issuing a jwt token will finish before the doc is saved so that'll be error otherwise
   next();
 });
 
