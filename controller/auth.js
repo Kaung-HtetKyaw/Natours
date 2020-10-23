@@ -14,14 +14,7 @@ exports.signUp = catchAsyncError(async (req, res, next) => {
     password: req.body.password,
     confirmedPassword: req.body.confirmedPassword,
   });
-  const token = generateToken(newUser._id);
-  res.status(200).json({
-    status: "success",
-    token,
-    data: {
-      user: newUser,
-    },
-  });
+  createTokenAndSend(newUser, res, 201, true);
 });
 
 exports.login = catchAsyncError(async (req, res, next) => {
@@ -39,11 +32,7 @@ exports.login = catchAsyncError(async (req, res, next) => {
     return next(new AppError("Invalid email or password", 401));
   }
   // send response back to client
-  const token = generateToken(user._id);
-  res.status(200).json({
-    status: "success",
-    token,
-  });
+  createTokenAndSend(user, res, 200);
 });
 
 exports.isAuthenticated = catchAsyncError(async (req, res, next) => {
@@ -78,7 +67,7 @@ exports.isAuthenticated = catchAsyncError(async (req, res, next) => {
       new AppError("Password was changed recently. Please log in again.", 401)
     );
   }
-  // provide user information for next middleware
+  // provide user information for next middlewares and handlers
   req.user = user;
   next();
 });
@@ -145,11 +134,31 @@ exports.resetPassword = catchAsyncError(async (req, res, next) => {
   await user.save();
 
   // return the response with new jwt token
-  const token = generateToken(user._id);
-  res.status(200).json({
-    status: "success",
-    token,
-  });
+  createTokenAndSend(user, res, 200);
+});
+
+exports.updatePassword = catchAsyncError(async (req, res, next) => {
+  // get the user
+  const user = await User.findById(req.user._id).select("+password"); // user obj coming from isAuthenticated middleware
+  if (!user) {
+    return next(
+      new AppError("There is no user with email address you provided", 404)
+    );
+  }
+  // verify the password
+  const isCorrectPassword = user.isCorrectPassword(
+    req.body.currentPassword,
+    user.password
+  );
+  if (!isCorrectPassword) {
+    return next(new AppError("Your old password is incorrect", 401));
+  }
+  // update the password
+  user.password = req.body.password;
+  user.confirmedPassword = req.body.confirmedPassword;
+  await user.save();
+  // return response
+  createTokenAndSend(user, res, 200);
 });
 
 function generateToken(id) {
@@ -168,4 +177,14 @@ function generateMailOptions(req, resetToken, user) {
     subject: "Your password reset token (valid for 10 mins)",
     message,
   };
+}
+
+function createTokenAndSend(user, res, statusCode, data = false) {
+  const token = generateToken(user._id);
+  let response = {
+    status: "success",
+    token,
+  };
+  if (data) response.data = { user };
+  res.status(statusCode).json(response);
 }
