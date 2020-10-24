@@ -6,6 +6,7 @@ const { promisify } = require("util");
 
 const { catchAsyncError } = require("../utils/error");
 const { sendEmail } = require("../utils/email");
+const { days } = require("../utils/time");
 
 exports.signUp = catchAsyncError(async (req, res, next) => {
   const newUser = await User.create({
@@ -186,5 +187,12 @@ function createTokenAndSend(user, res, statusCode, data = false) {
     token,
   };
   if (data) response.data = { user };
+  // create and attached it to response
+  const cookieOptions = {
+    expires: new Date(Date.now() + days(process.env.JWT_COOKIE_EXPIRES_IN)),
+    httpOnly: true,
+  };
+  res.cookie("jwt", token, cookieOptions);
+  if (process.env.NODE_ENV == "production") cookieOptions.secure = true;
   res.status(statusCode).json(response);
 }
