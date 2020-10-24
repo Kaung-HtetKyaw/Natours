@@ -16,6 +16,11 @@ router.patch(
   authController.isAuthenticated,
   authController.updatePassword
 );
+router.patch(
+  "/updateInfo",
+  authController.isAuthenticated,
+  usersController.updateInfo
+);
 
 //users routes🙋
 router

@@ -78,5 +78,5 @@ function handleJWTError() {
 }
 
 function handleJWTExpiredError() {
-  return new AppError("Token expired.Please log in again", 401);
+  return new AppError("Token expired. Please log in again", 401);
 }
