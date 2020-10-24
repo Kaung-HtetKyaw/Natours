@@ -2,6 +2,8 @@ const express = require("express");
 const morgam = require("morgan");
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
+const mongoSanitize = require("express-mongo-sanitize");
+const xss = require("xss-clean");
 
 const AppError = require("./utils/api/AppError");
 const { minutes } = require("./utils/time");
@@ -22,9 +24,15 @@ if (process.env.NODE_ENV === "development") {
 
 // body parser
 app.use(express.json());
+// data sanitization (should be after body parser to clean after the body is parsed)
+// against NOSQL query injections
+app.use(mongoSanitize());
+// against XSS
+app.use(xss());
+
 // rate limiting
 const limiter = rateLimit({
-  max: 2,
+  max: 100,
   windowMs: minutes(15),
   message: "Too many requests from this IP. Please try again in an hour.",
 });
