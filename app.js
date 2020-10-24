@@ -1,6 +1,7 @@
 const express = require("express");
 const morgam = require("morgan");
 const rateLimit = require("express-rate-limit");
+const helmet = require("helmet");
 
 const AppError = require("./utils/api/AppError");
 const { minutes } = require("./utils/time");
@@ -11,18 +12,25 @@ const userRouter = require("./routes/users");
 
 const app = express();
 
-// global middleware
+// GLOBAL MIDDLEWARES
+// set HTTP header
+app.use(helmet());
+// dev logger
 if (process.env.NODE_ENV === "development") {
   app.use(morgam("dev"));
 }
 
+// body parser
 app.use(express.json());
+// rate limiting
 const limiter = rateLimit({
   max: 2,
   windowMs: minutes(15),
   message: "Too many requests from this IP. Please try again in an hour.",
 });
 app.use("/api", limiter);
+// serving static files
+app.use(express.static(`${__dirname}/public`));
 
 //route middlewares🌎
 app.use("/api/v1/tours", tourRouter);
