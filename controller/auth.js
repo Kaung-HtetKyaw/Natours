@@ -194,5 +194,6 @@ function createTokenAndSend(user, res, statusCode, data = false) {
   };
   res.cookie("jwt", token, cookieOptions);
   if (process.env.NODE_ENV == "production") cookieOptions.secure = true;
+  // send the response
   res.status(statusCode).json(response);
 }
