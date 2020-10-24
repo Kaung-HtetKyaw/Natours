@@ -17,9 +17,14 @@ router.patch(
   authController.updatePassword
 );
 router.patch(
-  "/updateInfo",
+  "/updateMe",
   authController.isAuthenticated,
-  usersController.updateInfo
+  usersController.updateMe
+);
+router.delete(
+  "/deleteMe",
+  authController.isAuthenticated,
+  usersController.deleteMe
 );
 
 //users routes🙋
@@ -30,7 +35,6 @@ router
 router
   .route("/:id")
   .get(usersController.getUser)
-  .patch(usersController.updateUser)
-  .delete(usersController.deleteUser);
+  .patch(usersController.updateUser);
 
 module.exports = router;

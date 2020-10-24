@@ -28,7 +28,7 @@ exports.createNewUser = (req, res) => {
   });
 };
 // update my info
-exports.updateInfo = catchAsyncError(async (req, res, next) => {
+exports.updateMe = catchAsyncError(async (req, res, next) => {
   // don't allow password
   if (!!req.body.password) {
     return next(
@@ -45,7 +45,6 @@ exports.updateInfo = catchAsyncError(async (req, res, next) => {
     new: true,
     runValidators: true,
   });
-  console.log(user);
   // return response
   res.status(200).json({
     status: "success",
@@ -58,12 +57,14 @@ exports.updateUser = (req, res) => {
     message: "This route is not defined yet...",
   });
 };
-exports.deleteUser = (req, res) => {
-  res.status(500).json({
-    status: "error",
-    message: "This route is not defined yet...",
+exports.deleteMe = catchAsyncError(async (req, res, next) => {
+  console.log(req.user);
+  await User.findByIdAndUpdate(req.user.id, { active: false });
+  res.status(204).json({
+    status: "success",
+    data: null,
   });
-};
+});
 
 function filterRequestBody(body, fields) {
   const allowedFields = makeMap(fields);
