@@ -7,6 +7,7 @@ class APIFeatures {
   }
   filter() {
     const reservedQueryParams = makeMap("limit,page,sort,fields");
+    console.log(this.queryString);
     //exclude the reserved fields
     let normalizedQueryObject = normalizeQueryObject(
       this.queryString,

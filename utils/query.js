@@ -1,6 +1,15 @@
 const Tour = require("../model/Tours");
 const { makeMap } = require("./utils");
 
+exports.whiteListedQueryParams = [
+  "duration",
+  "ratingsQuantity",
+  "ratingsAverage",
+  "maxGroupSize",
+  "difficulty",
+  "price",
+];
+
 exports.normalizeQueryObject = (queryObject, reservedQueryParams) => {
   //normalize query obj
   let normalizeQueryObj = Object.assign({}, queryObject);

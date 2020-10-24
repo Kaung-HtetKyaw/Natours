@@ -4,10 +4,12 @@ const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
 const mongoSanitize = require("express-mongo-sanitize");
 const xss = require("xss-clean");
+const hpp = require("hpp");
 
 const AppError = require("./utils/api/AppError");
 const { minutes } = require("./utils/time");
 const globalErrorHandler = require("./controller/error");
+const { whiteListedQueryParams } = require("./utils/query");
 
 const tourRouter = require("./routes/tours");
 const userRouter = require("./routes/users");
@@ -15,7 +17,7 @@ const userRouter = require("./routes/users");
 const app = express();
 
 // GLOBAL MIDDLEWARES
-// set HTTP header
+// set HTTP header (should be used at the top)
 app.use(helmet());
 // dev logger
 if (process.env.NODE_ENV === "development") {
@@ -37,6 +39,12 @@ const limiter = rateLimit({
   message: "Too many requests from this IP. Please try again in an hour.",
 });
 app.use("/api", limiter);
+// prevent parameter pollution
+app.use(
+  hpp({
+    whitelist: whiteListedQueryParams,
+  })
+);
 // serving static files
 app.use(express.static(`${__dirname}/public`));
 
