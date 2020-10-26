@@ -3,6 +3,7 @@ const validator = require("validator");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const { reset } = require("nodemon");
+const { minutes } = require("../utils/time");
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -60,12 +61,12 @@ const userSchema = new mongoose.Schema({
 // plain text password to encrypted password only when user create new or update
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
-  this.password = await bcrypt.hash(this.password, 12);
+  this.password = await bcrypt.hash(this.password, process.env.BCRYPT_SALT);
   this.confirmedPassword = undefined; // removing because dont need it anymore
   next();
 });
 
-// only fun for updating password
+// only run for updating password
 userSchema.pre("save", function (next) {
   if (!this.isModified("password") || this.isNew) return next();
   this.passwordChangedAt = Date.now() - 2000; // substracting 2s cuz issuing a jwt token will finish before the doc is saved so that'll be error otherwise
@@ -102,7 +103,7 @@ userSchema.methods.generateResetPasswordToken = function () {
     .update(resetToken)
     .digest("hex"); // encrypted whick will be stored in the db
   console.log({ resetToken, passwordResetToken: this.passwordResetToken });
-  this.passwordResetExpiresAt = Date.now() + 10 * 60 * 1000; // will expires after 10 mins
+  this.passwordResetExpiresAt = Date.now() + minutes(10); // will expires after 10 mins
   return resetToken;
 };
 

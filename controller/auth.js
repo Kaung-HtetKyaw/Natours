@@ -14,7 +14,7 @@ exports.signUp = catchAsyncError(async (req, res, next) => {
     email: req.body.email,
     password: req.body.password,
     confirmedPassword: req.body.confirmedPassword,
-  });
+  }); // dont save the whole req body
   createTokenAndSend(newUser, res, 201, true);
 });
 

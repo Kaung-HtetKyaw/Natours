@@ -3,6 +3,7 @@ const slugify = require("slugify");
 //create a schema
 const options = {
   toJSON: { virtuals: true },
+  toObject: { virtuals: true },
 };
 const tourSchema = new mongoose.Schema(
   {
@@ -79,6 +80,35 @@ const tourSchema = new mongoose.Schema(
       default: false,
     },
     slug: String,
+    startLocation: {
+      type: {
+        type: String,
+        default: "Point",
+        enum: {
+          values: ["Point"],
+          message: "Invalid Geospatial type.",
+        },
+      },
+      coordinates: [Number],
+      address: String,
+      description: String,
+    },
+    locations: [
+      {
+        type: {
+          type: String,
+          default: "Point",
+          enum: {
+            values: ["Point"],
+            message: "Invalid Geospatial type.",
+          },
+        },
+        coordinates: [Number],
+        address: String,
+        description: String,
+        day: Number,
+      },
+    ],
   },
   options
 );
