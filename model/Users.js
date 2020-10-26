@@ -61,7 +61,7 @@ const userSchema = new mongoose.Schema({
 // plain text password to encrypted password only when user create new or update
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
-  this.password = await bcrypt.hash(this.password, process.env.BCRYPT_SALT);
+  this.password = await bcrypt.hash(this.password, 12);
   this.confirmedPassword = undefined; // removing because dont need it anymore
   next();
 });

@@ -110,7 +110,12 @@ const tourSchema = new mongoose.Schema(
         day: Number,
       },
     ],
-    guides: Array,
+    guides: [
+      {
+        type: mongoose.Schema.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   options
 );
@@ -126,19 +131,6 @@ tourSchema.pre("save", function (next) {
   });
   next();
 });
-
-tourSchema.pre("save", async function (next) {
-  this.guides = await Promise.all(
-    this.guides.map(async (id) => {
-      return await User.findById(id);
-    })
-  );
-  next();
-});
-// tourSchema.post("save", function (doc, next) {
-//   console.log(doc);
-//   next();
-// });
 
 //create pre and post query middlewares
 tourSchema.pre(/^find/, function (next) {
