@@ -13,6 +13,7 @@ const { whiteListedQueryParams } = require("./utils/query");
 
 const tourRouter = require("./routes/tours");
 const userRouter = require("./routes/users");
+const reviewRouter = require("./routes/reviews");
 
 const app = express();
 
@@ -51,6 +52,7 @@ app.use(express.static(`${__dirname}/public`));
 //route middlewares🌎
 app.use("/api/v1/tours", tourRouter);
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1/reviews", reviewRouter);
 
 //catch 404 error ⚠
 app.all("*", (req, res, next) => {
