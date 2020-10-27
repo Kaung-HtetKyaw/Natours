@@ -123,6 +123,13 @@ const tourSchema = new mongoose.Schema(
 tourSchema.virtual("durationWeeks").get(function () {
   return Math.round((this.duration * 10) / 7) / 10;
 });
+// virtual populate (like foreign Key and primary key in Relational Database)
+tourSchema.virtual("reviews", {
+  ref: "Review",
+  foreignField: "tour",
+  localField: "_id",
+});
+
 //create pre and post document middlewares
 tourSchema.pre("save", function (next) {
   this.slug = slugify(this.name, {
