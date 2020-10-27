@@ -20,24 +20,19 @@ exports.createNewReview = catchAsyncError(async (req, res, next) => {
   });
 });
 exports.getAllReviews = catchAsyncError(async (req, res, next) => {
-  const reviews = await Review.find();
+  let filter = {};
+
+  if (req.params.tourId) {
+    const isValidTour = await Tour.exists({ _id: req.params.tourId });
+    if (!isValidTour) {
+      return next(new AppError("Invalid tour id.", 404));
+    }
+    filter = { tour: req.params.tourId };
+  }
+  const reviews = await Review.find(filter);
   res.status(200).json({
     status: "success",
     resutls: reviews.length,
     data: { reviews },
-  });
-});
-exports.getTourReviews = catchAsyncError(async (req, res, next) => {
-  const isValidTour = await Tour.exists({ _id: req.params.tourId });
-  if (!isValidTour) {
-    return next(new AppError("Invalid tour id.", 404));
-  }
-  const reviews = await Review.findOne({ tour: req.params.tourId });
-  res.status(200).json({
-    status: "success",
-    results: reviews.length,
-    data: {
-      reviews,
-    },
   });
 });
