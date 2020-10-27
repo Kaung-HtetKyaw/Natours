@@ -14,5 +14,6 @@ router
     authController.isAuthorized("user"),
     reviewsController.createNewReview
   );
+router.route("/:id").delete(reviewsController.deleteReview);
 
 module.exports = router;

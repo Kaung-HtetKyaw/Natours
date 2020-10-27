@@ -35,6 +35,7 @@ router
 router
   .route("/:id")
   .get(usersController.getUser)
-  .patch(usersController.updateUser);
+  .patch(usersController.updateUser)
+  .delete(usersController.deleteUser);
 
 module.exports = router;

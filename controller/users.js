@@ -1,6 +1,7 @@
 const User = require("../model/Users");
 const APIFeatures = require("../utils/api/APIFeatures");
 const AppError = require("../utils/api/AppError");
+const handlerFactory = require("../factory/handler");
 const { catchAsyncError } = require("../utils/error");
 const { makeMap } = require("../utils/utils");
 //Users routes handlers
@@ -65,6 +66,8 @@ exports.deleteMe = catchAsyncError(async (req, res, next) => {
     data: null,
   });
 });
+
+exports.deleteUser = handlerFactory.deleteOne(User);
 
 function filterRequestBody(body, fields) {
   const allowedFields = makeMap(fields);
