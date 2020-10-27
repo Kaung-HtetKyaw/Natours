@@ -35,7 +35,7 @@ router
 router
   .route("/:id")
   .get(usersController.getUser)
-  .patch(usersController.updateUser)
+  .patch(usersController.updateUser) // dont update password with this route
   .delete(usersController.deleteUser);
 
 module.exports = router;

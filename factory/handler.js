@@ -15,3 +15,34 @@ exports.deleteOne = (Model) => {
     });
   });
 };
+
+exports.createOne = (Model) => {
+  return catchAsyncError(async (req, res, next) => {
+    const doc = await Model.create({ ...req.body });
+    res.status(201).json({
+      status: "success",
+      data: {
+        data: doc,
+      },
+    });
+  });
+};
+
+exports.updateOne = (Model) => {
+  return catchAsyncError(async (req, res, next) => {
+    const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    if (!doc) {
+      next(new AppError(`Cannot find tour with id ${req.params.id}`, 404));
+      return;
+    }
+    res.status(200).json({
+      status: "success",
+      data: {
+        data: doc,
+      },
+    });
+  });
+};

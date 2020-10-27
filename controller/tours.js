@@ -35,28 +35,10 @@ exports.getTour = catchAsyncError(async (req, res, next) => {
     data: { tour },
   });
 });
-exports.createNewTour = catchAsyncError(async (req, res, next) => {
-  const newTour = await Tour.create({ ...req.body });
-  res.status(201).json({
-    status: "success",
-    data: newTour,
-  });
-});
-exports.updateTour = catchAsyncError(async (req, res, next) => {
-  const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
-  if (!tour) {
-    next(new AppError(`Cannot find tour with id ${req.params.id}`, 404));
-    return;
-  }
-  res.status(200).json({
-    status: "success",
-    data: tour,
-  });
-});
+exports.createNewTour = handlerFactory.createOne(Tour);
+exports.updateTour = handlerFactory.updateOne(Tour);
 exports.deleteTour = handlerFactory.deleteOne(Tour);
+
 exports.aliasTopTours = (req, res, next) => {
   req.query.limit = 5;
   req.query.sort = "-ratingsAverage,price";

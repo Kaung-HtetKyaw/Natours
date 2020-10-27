@@ -5,21 +5,13 @@ const handlerFactory = require("../factory/handler");
 
 const { catchAsyncError } = require("../utils/error");
 
-exports.createNewReview = catchAsyncError(async (req, res, next) => {
-  const { review, rating, tour } = req.body;
-  const newReview = await Review.create({
-    review,
-    rating,
-    tour: tour || req.params.tourId,
-    user: req.user._id,
-  });
-  res.status(201).json({
-    status: "success",
-    data: {
-      review: newReview,
-    },
-  });
-});
+exports.setTourAndUserID = (req, res, next) => {
+  if (!req.body.tour) req.body.tour = req.params.tourId;
+  if (!req.body.user) req.body.user = req.user._id;
+  next();
+};
+exports.createNewReview = handlerFactory.createOne(Review);
+
 exports.getAllReviews = catchAsyncError(async (req, res, next) => {
   let filter = {};
   // check if there's tourId in params

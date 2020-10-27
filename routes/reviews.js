@@ -12,6 +12,7 @@ router
   .post(
     authController.isAuthenticated,
     authController.isAuthorized("user"),
+    reviewsController.setTourAndUserID,
     reviewsController.createNewReview
   );
 router.route("/:id").delete(reviewsController.deleteReview);
