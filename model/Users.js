@@ -2,7 +2,6 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
-const { reset } = require("nodemon");
 const { minutes } = require("../utils/time");
 
 const userSchema = new mongoose.Schema({
@@ -69,7 +68,7 @@ userSchema.pre("save", async function (next) {
 // only run for updating password
 userSchema.pre("save", function (next) {
   if (!this.isModified("password") || this.isNew) return next();
-  this.passwordChangedAt = Date.now() - 2000; // substracting 2s cuz issuing a jwt token will finish before the doc is saved so that'll be error otherwise
+  this.passwordChangedAt = Date.now() - 1000; // substracting 1s cuz issuing a jwt token will finish before the doc is saved so that'll be error otherwise
   next();
 });
 // query middleware to exclude inactive users

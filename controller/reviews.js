@@ -19,8 +19,14 @@ exports.createNewReview = catchAsyncError(async (req, res, next) => {
     },
   });
 });
-
 exports.getAllReviews = catchAsyncError(async (req, res, next) => {
+  const reviews = await Review.find();
+  res.status(200).json({
+    status: "success",
+    data: { reviews },
+  });
+});
+exports.getTourReviews = catchAsyncError(async (req, res, next) => {
   const isValidTour = await Tour.exists({ _id: req.params.tour });
   if (!isValidTour) {
     return next(new AppError("Invalid tour id.", 404));

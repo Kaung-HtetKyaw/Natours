@@ -20,7 +20,6 @@ const reviewSchema = new mongoose.Schema(
     createdAt: {
       type: Date,
       default: Date.now(),
-      select: false,
     },
     tour: {
       type: mongoose.Schema.ObjectId,
@@ -35,6 +34,15 @@ const reviewSchema = new mongoose.Schema(
   },
   options
 );
+
+//query middlewares
+reviewSchema.pre(/^find/, function (next) {
+  this.populate({ path: "tour", select: "name" }).populate({
+    path: "user",
+    select: "name photo",
+  });
+  next();
+});
 
 const Review = mongoose.model("Review", reviewSchema);
 module.exports = Review;
