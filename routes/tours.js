@@ -5,7 +5,7 @@ const rootDir = require("../utils/path");
 
 const toursController = require(`${rootDir}/controller/tours`);
 const authController = require("../controller/auth");
-const reviewController = require("../controller/reviews");
+const reviewRouter = require("../routes/reviews");
 
 //posts routes 📰
 router
@@ -26,13 +26,6 @@ router
     authController.isAuthorized("admin", "lead"),
     toursController.deleteTour
   );
-router
-  .route("/:tourId/reviews")
-  .post(
-    authController.isAuthenticated,
-    authController.isAuthorized("user"),
-    reviewController.createNewReview
-  );
-router.route("/:tourId/reviews").get(reviewController.getTourReviews);
+router.use("/:tourId/reviews", reviewRouter);
 
 module.exports = router;

@@ -23,6 +23,7 @@ exports.getAllReviews = catchAsyncError(async (req, res, next) => {
   const reviews = await Review.find();
   res.status(200).json({
     status: "success",
+    resutls: reviews.length,
     data: { reviews },
   });
 });
@@ -34,6 +35,7 @@ exports.getTourReviews = catchAsyncError(async (req, res, next) => {
   const reviews = await Review.findOne({ tour: req.params.tourId });
   res.status(200).json({
     status: "success",
+    results: reviews.length,
     data: {
       reviews,
     },
