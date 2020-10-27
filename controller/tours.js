@@ -7,34 +7,8 @@ const handlerFactory = require("../factory/handler");
 const Tour = require(`${rootDir}/model/Tours`);
 
 //Posts route handlers
-exports.getAllTours = catchAsyncError(async (req, res, next) => {
-  const features = new APIFeatures(Tour.find(), req.query)
-    .filter()
-    .sort()
-    .limitFields()
-    .paginate();
-  //execute the query
-  const tours = await features.query;
-  //return response
-  res.status(200).json({
-    status: "success",
-    results: tours.length,
-    data: {
-      tours,
-    },
-  });
-});
-exports.getTour = catchAsyncError(async (req, res, next) => {
-  const tour = await Tour.findById(req.params.id).populate({ path: "reviews" });
-  if (!tour) {
-    next(new AppError(`Cannot find tour with id ${req.params.id}`, 404));
-    return;
-  }
-  res.status(200).json({
-    status: "success",
-    data: { tour },
-  });
-});
+exports.getAllTours = handlerFactory.getAll(Tour);
+exports.getTour = handlerFactory.getOne(Tour, { path: "reviews" });
 exports.createNewTour = handlerFactory.createOne(Tour);
 exports.updateTour = handlerFactory.updateOne(Tour);
 exports.deleteTour = handlerFactory.deleteOne(Tour);

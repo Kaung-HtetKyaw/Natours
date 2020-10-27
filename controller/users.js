@@ -5,29 +5,8 @@ const handlerFactory = require("../factory/handler");
 const { catchAsyncError } = require("../utils/error");
 const { makeMap } = require("../utils/utils");
 //Users routes handlers
-exports.getAllUsers = catchAsyncError(async (req, res, next) => {
-  const features = new APIFeatures(User.find(), req.query).limitFields();
-  const users = await features.query;
-  res.status(200).json({
-    status: "success",
-    results: users.length,
-    data: {
-      users,
-    },
-  });
-});
-exports.getUser = (req, res) => {
-  res.status(500).json({
-    status: "error",
-    message: "This route is not defined yet...",
-  });
-};
-exports.createNewUser = (req, res) => {
-  res.status(500).json({
-    status: "error",
-    message: "This route is not defined yet...",
-  });
-};
+exports.getAllUsers = handlerFactory.getAll(User);
+exports.getUser = handlerFactory.getOne(User);
 // update my info
 exports.updateMe = catchAsyncError(async (req, res, next) => {
   // don't allow password

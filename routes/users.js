@@ -28,10 +28,7 @@ router.delete(
 );
 
 //users routes🙋
-router
-  .route("/")
-  .get(usersController.getAllUsers)
-  .post(usersController.createNewUser);
+router.route("/").get(usersController.getAllUsers);
 router
   .route("/:id")
   .get(usersController.getUser)

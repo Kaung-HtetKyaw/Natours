@@ -15,6 +15,10 @@ router
     reviewsController.setTourAndUserID,
     reviewsController.createNewReview
   );
-router.route("/:id").delete(reviewsController.deleteReview);
+router
+  .route("/:id")
+  .delete(reviewsController.deleteReview)
+  .get(reviewsController.getReview)
+  .patch(reviewsController.updateReview);
 
 module.exports = router;

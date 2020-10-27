@@ -11,24 +11,9 @@ exports.setTourAndUserID = (req, res, next) => {
   next();
 };
 exports.createNewReview = handlerFactory.createOne(Review);
+exports.getReview = handlerFactory.getOne(Review);
+exports.updateReview = handlerFactory.updateOne(Review);
 
-exports.getAllReviews = catchAsyncError(async (req, res, next) => {
-  let filter = {};
-  // check if there's tourId in params
-  if (req.params.tourId) {
-    const isValidTour = await Tour.exists({ _id: req.params.tourId });
-    // check id is valid
-    if (!isValidTour) {
-      return next(new AppError("Invalid tour id.", 404));
-    }
-    filter = { tour: req.params.tourId };
-  }
-  const reviews = await Review.find(filter);
-  res.status(200).json({
-    status: "success",
-    resutls: reviews.length,
-    data: { reviews },
-  });
-});
+exports.getAllReviews = handlerFactory.getAll(Review);
 
 exports.deleteReview = handlerFactory.deleteOne(Review);
