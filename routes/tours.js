@@ -21,7 +21,7 @@ router
   );
 router
   .route("/")
-  .get(authController.isAuthenticated, toursController.getAllTours)
+  .get(toursController.getAllTours)
   .post(
     authController.isAuthenticated,
     authController.isAuthorized("admin", "lead"),
