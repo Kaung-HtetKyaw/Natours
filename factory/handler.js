@@ -21,7 +21,6 @@ exports.getOne = (Model, populateOptions) => {
 exports.getAll = (Model) => {
   return catchAsyncError(async (req, res, next) => {
     let filter = {};
-
     if (req.params.tourId) {
       filter = { tour: req.params.tourId };
     }
@@ -31,7 +30,7 @@ exports.getAll = (Model) => {
       .limitFields()
       .paginate();
     //execute the query
-    const docs = await features.query;
+    const docs = await features.query.explain();
     //return response
     res.status(200).json({
       status: "success",
