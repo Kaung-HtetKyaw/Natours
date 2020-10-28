@@ -7,6 +7,11 @@ const { makeMap } = require("../utils/utils");
 //Users routes handlers
 exports.getAllUsers = handlerFactory.getAll(User);
 exports.getUser = handlerFactory.getOne(User);
+
+exports.getMe = (req, res, next) => {
+  req.params.id = req.user._id;
+  next();
+};
 // update my info
 exports.updateMe = catchAsyncError(async (req, res, next) => {
   // don't allow password
