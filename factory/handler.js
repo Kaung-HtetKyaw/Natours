@@ -30,7 +30,8 @@ exports.getAll = (Model) => {
       .limitFields()
       .paginate();
     //execute the query
-    const docs = await features.query.explain();
+    // const docs = await features.query.explain();
+    const docs = await features.query;
     //return response
     res.status(200).json({
       status: "success",
