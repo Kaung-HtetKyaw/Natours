@@ -36,7 +36,7 @@ const reviewSchema = new mongoose.Schema(
   options
 );
 
-// indices
+// indexes
 reviewSchema.index({ tour: 1, user: 1 }, { unique: true });
 
 // static methods

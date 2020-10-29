@@ -1,6 +1,7 @@
 const rootDir = require("../utils/path");
 const { catchAsyncError } = require("../utils/error");
-const APIFeatures = require("../utils/api/APIFeatures");
+const { radiusToRadian } = require("../utils/utils");
+
 const AppError = require("../utils/api/AppError");
 const handlerFactory = require("../factory/handler");
 //Model
@@ -12,6 +13,34 @@ exports.getTour = handlerFactory.getOne(Tour, { path: "reviews" });
 exports.createNewTour = handlerFactory.createOne(Tour);
 exports.updateTour = handlerFactory.updateOne(Tour);
 exports.deleteTour = handlerFactory.deleteOne(Tour);
+
+// tours-within/400/centre/33.982591,-118.463966/mi
+exports.getToursWithin = catchAsyncError(async (req, res, next) => {
+  const { distance, latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(",");
+  if (!lat || !lng) {
+    return next(
+      new AppError(
+        "Please provide latitude and longtitude with the format lat,lng.",
+        400
+      )
+    );
+  }
+  const radius = radiusToRadian(distance, unit);
+  console.log(radius);
+  const tours = await Tour.find({
+    startLocation: {
+      $geoWithin: { $centerSphere: [[lng, lat], radius] },
+    },
+  });
+  res.status(200).json({
+    status: "success",
+    results: tours.length,
+    data: {
+      data: tours,
+    },
+  });
+});
 
 exports.aliasTopTours = (req, res, next) => {
   req.query.limit = 5;

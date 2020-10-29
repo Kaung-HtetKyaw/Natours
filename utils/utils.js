@@ -16,3 +16,7 @@ exports.makeMap = (lists) => {
     return map[key] ? map[key] : false;
   };
 };
+
+exports.radiusToRadian = (distance, unit) => {
+  return unit === "mi" ? distance / 3963.2 : distance / 6378.1;
+};
