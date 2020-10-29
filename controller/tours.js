@@ -42,6 +42,45 @@ exports.getToursWithin = catchAsyncError(async (req, res, next) => {
   });
 });
 
+exports.getToursDistances = catchAsyncError(async (req, res, next) => {
+  const { latlng, unit } = req.params;
+  const [lat, lng] = latlng.split(",");
+  if (!lat || !lng) {
+    return next(
+      new AppError(
+        "Please provide latitude and longtitude with the format lat,lng.",
+        400
+      )
+    );
+  }
+  const multiplier = unit == "mi" ? 0.000621371 : 0.0001;
+  const distances = await Tour.aggregate([
+    {
+      $geoNear: {
+        near: {
+          type: "Point",
+          coordinates: [Number(lng), Number(lat)],
+        },
+        distanceField: "distance",
+        distanceMultiplier: multiplier,
+      },
+    },
+    {
+      $project: {
+        distance: 1,
+        name: 1,
+      },
+    },
+  ]);
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      data: distances,
+    },
+  });
+});
+
 exports.aliasTopTours = (req, res, next) => {
   req.query.limit = 5;
   req.query.sort = "-ratingsAverage,price";

@@ -120,13 +120,9 @@ const tourSchema = new mongoose.Schema(
   options
 );
 // index
-tourSchema.index({
-  price: 1,
-  ratingsAverage: -1,
-});
-tourSchema.index({
-  slug: 1,
-});
+tourSchema.index({ price: 1, ratingsAverage: -1 });
+tourSchema.index({ slug: 1 });
+tourSchema.index({ startLocation: "2dsphere" });
 //create virtuals
 tourSchema.virtual("durationWeeks").get(function () {
   return Math.round((this.duration * 10) / 7) / 10;
@@ -167,7 +163,11 @@ tourSchema.post(/^find/, function (docs, next) {
 
 // Aggregation middleware
 tourSchema.pre("aggregate", function (next) {
-  this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+  const isGeoNear = Object.keys(this.pipeline()[0])[0] === "$geoNear";
+  if (!isGeoNear) {
+    this.pipeline().unshift({ $match: { secretTour: { $ne: true } } });
+  }
+
   next();
 });
 
