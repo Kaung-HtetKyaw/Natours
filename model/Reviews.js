@@ -36,6 +36,9 @@ const reviewSchema = new mongoose.Schema(
   options
 );
 
+// indices
+reviewSchema.index({ tour: 1, user: 1 }, { unique: true });
+
 // static methods
 reviewSchema.statics.calculateStats = async function (tourId) {
   // this points to the current model
