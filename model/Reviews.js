@@ -51,18 +51,37 @@ reviewSchema.statics.calculateStats = async function (tourId) {
       },
     },
   ]);
-  await Tour.findByIdAndUpdate(tourId, {
-    ratingsAverage: stats[0].avgRating,
-    ratingsQuantity: stats[0].nRating,
-  });
+  if (stats.length > 0) {
+    await Tour.findByIdAndUpdate(tourId, {
+      ratingsAverage: stats[0].avgRating,
+      ratingsQuantity: stats[0].nRating,
+    });
+  } else {
+    await Tour.findByIdAndUpdate(tourId, {
+      ratingsAverage: 4.5,
+      ratingsQuantity: 0,
+    });
+  }
 };
-// pre and post middleware
+
 reviewSchema.post("save", function () {
   // Review is not yet defined at this point, so use this.constructor
   this.constructor.calculateStats(this.tour);
 });
 
-//query middlewares
+// recalculate the review stats for updating and deleting
+// first, getting current document by executing current query and pass it to the query obj
+reviewSchema.pre(/^findOneAnd/, async function (next) {
+  // this points to current query
+  this.currentReview = await this.findOne();
+  next();
+});
+
+reviewSchema.post(/^findOneAnd/, async function () {
+  // this.findOne wont work at this point, cuz query've alreay executed
+  await this.currentReview.constructor.calculateStats(this.currentReview.tour);
+});
+
 reviewSchema.pre(/^find/, function (next) {
   this.populate({
     path: "user",
