@@ -2,6 +2,7 @@ const rootDir = require("../utils/path");
 const { catchAsyncError } = require("../utils/error");
 const { radiusToRadian } = require("../utils/utils");
 
+const APIFeatures = require("../utils/api/APIFeatures");
 const AppError = require("../utils/api/AppError");
 const handlerFactory = require("../factory/handler");
 //Model
@@ -14,6 +15,7 @@ exports.createNewTour = handlerFactory.createOne(Tour);
 exports.updateTour = handlerFactory.updateOne(Tour);
 exports.deleteTour = handlerFactory.deleteOne(Tour);
 
+// get tours within a certain radius
 // tours-within/400/centre/33.982591,-118.463966/mi
 exports.getToursWithin = catchAsyncError(async (req, res, next) => {
   const { distance, latlng, unit } = req.params;
@@ -26,11 +28,11 @@ exports.getToursWithin = catchAsyncError(async (req, res, next) => {
       )
     );
   }
-  const radius = radiusToRadian(distance, unit);
-  console.log(radius);
+  const radian = radiusToRadian(distance, unit);
+  console.log(radian);
   const tours = await Tour.find({
     startLocation: {
-      $geoWithin: { $centerSphere: [[lng, lat], radius] },
+      $geoWithin: { $centerSphere: [[lng, lat], radian] },
     },
   });
   res.status(200).json({
@@ -42,6 +44,8 @@ exports.getToursWithin = catchAsyncError(async (req, res, next) => {
   });
 });
 
+// get tour distances from a certain point
+// tours-distances/33.982591,-118.463966/mi
 exports.getToursDistances = catchAsyncError(async (req, res, next) => {
   const { latlng, unit } = req.params;
   const [lat, lng] = latlng.split(",");

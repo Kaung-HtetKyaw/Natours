@@ -5,6 +5,7 @@ const helmet = require("helmet");
 const mongoSanitize = require("express-mongo-sanitize");
 const xss = require("xss-clean");
 const hpp = require("hpp");
+const path = require("path");
 
 const AppError = require("./utils/api/AppError");
 const { minutes } = require("./utils/time");
@@ -25,6 +26,10 @@ if (process.env.NODE_ENV === "development") {
   app.use(morgam("dev"));
 }
 
+app.set("view engine", "pug");
+app.set("views", path.join(__dirname, "views"));
+
+app.use(express.static(path.join(__dirname, "views")));
 // body parser
 app.use(express.json());
 // data sanitization (should be after body parser to clean after the body is parsed)
@@ -46,9 +51,10 @@ app.use(
     whitelist: whiteListedQueryParams,
   })
 );
-// serving static files
-app.use(express.static(`${__dirname}/public`));
 
+app.get("/", (req, res) => {
+  res.status(200).render("index");
+});
 //route middlewares🌎
 app.use("/api/v1/tours", tourRouter);
 app.use("/api/v1/users", userRouter);
