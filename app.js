@@ -53,7 +53,7 @@ app.use(
 );
 
 app.get("/", (req, res) => {
-  res.status(200).render("index");
+  res.status(200).render("base");
 });
 //route middlewares🌎
 app.use("/api/v1/tours", tourRouter);
