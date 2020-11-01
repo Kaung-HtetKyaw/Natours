@@ -15,6 +15,7 @@ const { whiteListedQueryParams } = require("./utils/query");
 const tourRouter = require("./routes/tours");
 const userRouter = require("./routes/users");
 const reviewRouter = require("./routes/reviews");
+const viewRouter = require("./routes/views");
 
 const app = express();
 
@@ -29,7 +30,7 @@ if (process.env.NODE_ENV === "development") {
 app.set("view engine", "pug");
 app.set("views", path.join(__dirname, "views"));
 
-app.use(express.static(path.join(__dirname, "views")));
+app.use(express.static(path.join(__dirname, "public")));
 // body parser
 app.use(express.json());
 // data sanitization (should be after body parser to clean after the body is parsed)
@@ -52,9 +53,7 @@ app.use(
   })
 );
 
-app.get("/", (req, res) => {
-  res.status(200).render("base");
-});
+app.use("/", viewRouter);
 //route middlewares🌎
 app.use("/api/v1/tours", tourRouter);
 app.use("/api/v1/users", userRouter);
