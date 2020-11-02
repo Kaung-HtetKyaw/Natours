@@ -7,6 +7,11 @@ exports.getOverview = catchAsyncError(async (req, res) => {
   res.status(200).render("overview", { tours, title: "All Tours" });
 });
 
-exports.getTour = (req, res) => {
-  res.status(200).render("tour", { title: "The Park Camper" });
-};
+exports.getTour = catchAsyncError(async (req, res) => {
+  const slug = req.params.slug;
+  const tour = await Tour.findOne({ slug }).populate({
+    path: "reviews",
+    select: "review rating user",
+  });
+  res.status(200).render("tour", { tour });
+});
