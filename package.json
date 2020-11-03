@@ -5,6 +5,7 @@
   "main": "first-app.js",
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.5",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "express-mongo-sanitize": "^2.0.0",
@@ -12,6 +13,7 @@
     "helmet": "^4.1.1",
     "hpp": "^0.2.3",
     "jsonwebtoken": "^8.5.1",
+    "mapbox-gl": "^1.12.0",
     "mongoose": "^5.10.9",
     "morgan": "^1.10.0",
     "nodemailer": "^6.4.14",

@@ -33,7 +33,7 @@ exports.login = catchAsyncError(async (req, res, next) => {
     return next(new AppError("Invalid email or password", 401));
   }
   // send response back to client
-  createTokenAndSend(user, res, 200);
+  createTokenAndSend(user, res, 200, true);
 });
 
 exports.isAuthenticated = catchAsyncError(async (req, res, next) => {
@@ -44,6 +44,8 @@ exports.isAuthenticated = catchAsyncError(async (req, res, next) => {
     req.headers.authorization.startsWith("Bearer")
   ) {
     token = req.headers.authorization.split(" ")[1];
+  } else if (req.cookies.jwt) {
+    token = req.cookies.jwt;
   }
   if (!token) {
     return next(
@@ -186,7 +188,7 @@ function createTokenAndSend(user, res, statusCode, data = false) {
     status: "success",
     token,
   };
-  if (data) response.data = { user };
+  if (data) response.data = user;
   // create and attached it to response
   const cookieOptions = {
     expires: new Date(Date.now() + days(process.env.JWT_COOKIE_EXPIRES_IN)),

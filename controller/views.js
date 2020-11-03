@@ -15,3 +15,7 @@ exports.getTour = catchAsyncError(async (req, res) => {
   });
   res.status(200).render("tour", { tour });
 });
+
+exports.getLogin = async (req, res) => {
+  res.status(200).render("login");
+};
