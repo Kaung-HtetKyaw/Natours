@@ -4,6 +4,8 @@
   "description": "",
   "main": "first-app.js",
   "dependencies": {
+    "@babel/polyfill": "^7.12.1",
+    "axios": "^0.21.0",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.5",
     "dotenv": "^8.2.0",
@@ -19,6 +21,7 @@
     "nodemailer": "^6.4.14",
     "nodemon": "^2.0.4",
     "pug": "^3.0.0",
+    "regenerator-runtime": "^0.13.7",
     "slugify": "^1.4.5",
     "validator": "^13.1.17",
     "xss-clean": "^0.1.1"
@@ -32,12 +35,17 @@
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-react": "^7.21.3",
-    "prettier": "^2.1.2"
+    "i": "^0.3.6",
+    "npm": "^6.14.8",
+    "prettier": "^2.1.2",
+    "parcel-bundler": "^1.12.3"
   },
   "scripts": {
     "start": "nodemon server.js",
     "start:prod": "NODE_ENV=production nodemon server.js",
-    "debug": "ndb server.js"
+    "debug": "ndb server.js",
+    "watch:js": "parcel watch ./public/js/index.js --out-dir ./public/js --out-file bundle.js",
+    "build:js": "parcel watch ./public/js/index.js --out-dir ./public/js --out-file bundle.js"
   },
   "author": "",
   "license": "ISC"

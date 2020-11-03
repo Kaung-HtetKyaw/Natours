@@ -1,12 +1,6 @@
-document.querySelector(".form").addEventListener("submit", (e) => {
-  e.preventDefault();
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
-  login(email, password);
-});
-
-const login = async (email, password) => {
-  console.log(email, password);
+import axios from "axios";
+import { showAlert } from "./alert";
+export const login = async (email, password) => {
   try {
     const result = await axios({
       method: "POST",
@@ -16,8 +10,13 @@ const login = async (email, password) => {
         password,
       },
     });
-    console.log(result);
+    if ((result.status = "success")) {
+      showAlert("success", "You've been logged in successfully.");
+      setTimeout(() => {
+        location.assign("/");
+      }, 1000);
+    }
   } catch (error) {
-    console.log(error.response);
+    showAlert("error", "Invalid email or password");
   }
 };
