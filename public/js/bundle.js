@@ -8411,7 +8411,7 @@ exports.showAlert = showAlert;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.signup = exports.login = void 0;
+exports.logout = exports.signup = exports.login = void 0;
 
 var _axios = _interopRequireDefault(require("axios"));
 
@@ -8522,6 +8522,51 @@ var signup = /*#__PURE__*/function () {
 }();
 
 exports.signup = signup;
+
+var logout = /*#__PURE__*/function () {
+  var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
+    var result;
+    return regeneratorRuntime.wrap(function _callee3$(_context3) {
+      while (1) {
+        switch (_context3.prev = _context3.next) {
+          case 0:
+            _context3.prev = 0;
+            _context3.next = 3;
+            return (0, _axios.default)({
+              method: "GET",
+              url: "http://localhost:8080/api/v1/users/logout"
+            });
+
+          case 3:
+            result = _context3.sent;
+
+            if (result.status = "success") {
+              location.reload(true);
+            }
+
+            _context3.next = 11;
+            break;
+
+          case 7:
+            _context3.prev = 7;
+            _context3.t0 = _context3["catch"](0);
+            console.log(_context3.t0.response);
+            (0, _alert.showAlert)("error", "Error logging out. Try again.");
+
+          case 11:
+          case "end":
+            return _context3.stop();
+        }
+      }
+    }, _callee3, null, [[0, 7]]);
+  }));
+
+  return function logout() {
+    return _ref3.apply(this, arguments);
+  };
+}();
+
+exports.logout = logout;
 },{"axios":"../../node_modules/axios/index.js","./alert":"alert.js"}],"mapbox.js":[function(require,module,exports) {
 "use strict";
 
@@ -8834,7 +8879,8 @@ var _mapbox = require("./mapbox");
 // DOM
 var mapbox = document.getElementById("map");
 var loginForm = document.querySelector(".form--login");
-var signupForm = document.querySelector(".form--signup"); // values
+var signupForm = document.querySelector(".form--signup");
+var logoutBtn = document.querySelector(".nav__el--logout"); // values
 
 if (loginForm) {
   loginForm.addEventListener("submit", function (e) {
@@ -8861,8 +8907,9 @@ if (signupForm) {
       confirmedPassword: confirmedPassword
     });
   });
-} // delegate
+}
 
+if (logoutBtn) logoutBtn.addEventListener("click", _login.logout); // delegate
 
 if (mapbox) {
   var locations = JSON.parse(mapbox.dataset.locations);

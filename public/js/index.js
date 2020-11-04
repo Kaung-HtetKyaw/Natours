@@ -1,11 +1,12 @@
 import "@babel/polyfill";
-import { login, signup } from "./login";
+import { login, signup, logout } from "./login";
 import { displayMap } from "./mapbox";
 
 // DOM
 const mapbox = document.getElementById("map");
 const loginForm = document.querySelector(".form--login");
 const signupForm = document.querySelector(".form--signup");
+const logoutBtn = document.querySelector(".nav__el--logout");
 
 // values
 if (loginForm) {
@@ -30,6 +31,8 @@ if (signupForm) {
     signup({ name, email, password, confirmedPassword });
   });
 }
+
+if (logoutBtn) logoutBtn.addEventListener("click", logout);
 
 // delegate
 if (mapbox) {

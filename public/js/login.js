@@ -39,3 +39,18 @@ export const signup = async (signUpData) => {
     showAlert("error", "Invalid email or password");
   }
 };
+
+export const logout = async () => {
+  try {
+    const result = await axios({
+      method: "GET",
+      url: "http://localhost:8080/api/v1/users/logout",
+    });
+    if ((result.status = "success")) {
+      location.reload(true);
+    }
+  } catch (error) {
+    console.log(error.response);
+    showAlert("error", "Error logging out. Try again.");
+  }
+};
