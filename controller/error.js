@@ -4,7 +4,7 @@ module.exports = (error, req, res, next) => {
   error.statusCode = error.statusCode || 500;
   error.status = error.status || "error";
   if (process.env.NODE_ENV == "development") {
-    sendErrorDev(error, res);
+    sendErrorDev(error, req, res);
   } else if (process.env.NODE_ENV == "production") {
     let normalizedError = { ...error, message: error.message };
     if (error.name == "CastError") {
@@ -22,34 +22,55 @@ module.exports = (error, req, res, next) => {
     if (error.name == "TokenExpiredError") {
       normalizedError = handleJWTExpiredError();
     }
-    sendErrorProd(normalizedError, res);
+    sendErrorProd(normalizedError, req, res);
   }
 };
 
-function sendErrorDev(error, res) {
-  res.status(error.statusCode).json({
-    status: error.status,
-    message: error.message,
-    error: error,
-    stack: error.stack,
-  });
-}
-function sendErrorProd(error, res) {
-  // catch the operational errors
-  if (error.isOperational) {
-    res.status(error.statusCode).json({
+function sendErrorDev(error, req, res) {
+  // error from api
+  if (req.originalUrl.startsWith("/api")) {
+    return res.status(error.statusCode).json({
       status: error.status,
       message: error.message,
+      error: error,
+      stack: error.stack,
     });
   }
-  // catch Programming,unexpected errors
-  else {
+  // error from rendered website
+  return res.status(error.statusCode).render("error", {
+    title: "Something went wrong",
+    message: error.message,
+  });
+}
+function sendErrorProd(error, req, res) {
+  if (req.originalUrl.startsWith("/api")) {
+    // catch the operational errors
+    if (error.isOperational) {
+      return res.status(error.statusCode).json({
+        status: error.status,
+        message: error.message,
+      });
+    }
+    // catch Programming,unexpected errors
     console.error("Error ❎", error);
-    res.status(500).json({
+    return res.status(500).json({
       status: "error",
       message: "Something went wrong",
     });
   }
+  // catch the operational errors
+  if (error.isOperational) {
+    return res.status(error.statusCode).render("error", {
+      title: "Something went wrong",
+      message: error.message,
+    });
+  }
+  // catch Programming,unexpected errors
+  console.error("Error ❎", error);
+  return res.status(error.statusCode).render("error", {
+    title: "Something went wrong",
+    message: "Please try again",
+  });
 }
 
 function handleCastErrorDB(error) {
