@@ -56,10 +56,10 @@ app.use(
     whitelist: whiteListedQueryParams,
   })
 );
-app.use((req, res, next) => {
-  console.log(req.cookies);
-  next();
-});
+// app.use((req, res, next) => {
+//   console.log(req.cookies);
+//   next();
+// });
 app.use("/", viewRouter);
 //route middlewares🌎
 app.use("/api/v1/tours", tourRouter);

@@ -17,6 +17,39 @@ export const login = async (email, password) => {
       }, 1000);
     }
   } catch (error) {
-    showAlert("error", "Invalid email or password");
+    showAlert("error", error.response.data.message);
+  }
+};
+
+export const signup = async (signUpData) => {
+  try {
+    const result = await axios({
+      method: "POST",
+      url: "http://localhost:8080/api/v1/users/signup",
+      data: signUpData,
+    });
+    if ((result.status = "success")) {
+      showAlert("success", "You've been signed successfully.");
+      setTimeout(() => {
+        location.assign("/");
+      }, 1000);
+    }
+  } catch (error) {
+    showAlert("error", error.response.data.message);
+  }
+};
+
+export const logout = async () => {
+  try {
+    const result = await axios({
+      method: "GET",
+      url: "http://localhost:8080/api/v1/users/logout",
+    });
+    if ((result.status = "success")) {
+      location.assign("/");
+    }
+  } catch (error) {
+    console.log(error.response);
+    showAlert("error", error.response.data.message);
   }
 };
