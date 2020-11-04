@@ -8411,7 +8411,7 @@ exports.showAlert = showAlert;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.login = void 0;
+exports.signup = exports.login = void 0;
 
 var _axios = _interopRequireDefault(require("axios"));
 
@@ -8473,6 +8473,55 @@ var login = /*#__PURE__*/function () {
 }();
 
 exports.login = login;
+
+var signup = /*#__PURE__*/function () {
+  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(signUpData) {
+    var result;
+    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            _context2.prev = 0;
+            _context2.next = 3;
+            return (0, _axios.default)({
+              method: "POST",
+              url: "http://localhost:8080/api/v1/users/signup",
+              data: signUpData
+            });
+
+          case 3:
+            result = _context2.sent;
+
+            if (result.status = "success") {
+              (0, _alert.showAlert)("success", "You've been signed successfully.");
+              setTimeout(function () {
+                location.assign("/");
+              }, 1000);
+            }
+
+            _context2.next = 11;
+            break;
+
+          case 7:
+            _context2.prev = 7;
+            _context2.t0 = _context2["catch"](0);
+            console.log(_context2.t0.response);
+            (0, _alert.showAlert)("error", "Invalid email or password");
+
+          case 11:
+          case "end":
+            return _context2.stop();
+        }
+      }
+    }, _callee2, null, [[0, 7]]);
+  }));
+
+  return function signup(_x3) {
+    return _ref2.apply(this, arguments);
+  };
+}();
+
+exports.signup = signup;
 },{"axios":"../../node_modules/axios/index.js","./alert":"alert.js"}],"mapbox.js":[function(require,module,exports) {
 "use strict";
 
@@ -8784,7 +8833,8 @@ var _mapbox = require("./mapbox");
 
 // DOM
 var mapbox = document.getElementById("map");
-var loginForm = document.querySelector(".form--login"); // values
+var loginForm = document.querySelector(".form--login");
+var signupForm = document.querySelector(".form--signup"); // values
 
 if (loginForm) {
   loginForm.addEventListener("submit", function (e) {
@@ -8793,6 +8843,23 @@ if (loginForm) {
     var password = document.getElementById("password").value;
     console.log(email, password);
     (0, _login.login)(email, password);
+  });
+}
+
+if (signupForm) {
+  signupForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    var email = document.getElementById("email").value;
+    var name = document.getElementById("name").value;
+    var password = document.getElementById("password").value;
+    var confirmedPassword = document.getElementById("confirmedPassword").value;
+    console.log(name, email, password, confirmedPassword);
+    (0, _login.signup)({
+      name: name,
+      email: email,
+      password: password,
+      confirmedPassword: confirmedPassword
+    });
   });
 } // delegate
 
@@ -8829,7 +8896,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "33045" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "46237" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
