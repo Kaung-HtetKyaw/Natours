@@ -17,7 +17,7 @@ export const login = async (email, password) => {
       }, 1000);
     }
   } catch (error) {
-    showAlert("error", "Invalid email or password");
+    showAlert("error", error.response.data.message);
   }
 };
 
@@ -35,8 +35,7 @@ export const signup = async (signUpData) => {
       }, 1000);
     }
   } catch (error) {
-    console.log(error.response);
-    showAlert("error", "Invalid email or password");
+    showAlert("error", error.response.data.message);
   }
 };
 
@@ -47,10 +46,10 @@ export const logout = async () => {
       url: "http://localhost:8080/api/v1/users/logout",
     });
     if ((result.status = "success")) {
-      location.reload(true);
+      location.assign("/");
     }
   } catch (error) {
     console.log(error.response);
-    showAlert("error", "Error logging out. Try again.");
+    showAlert("error", error.response.data.message);
   }
 };

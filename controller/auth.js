@@ -75,6 +75,7 @@ exports.isAuthenticated = catchAsyncError(async (req, res, next) => {
   }
   // provide user information for next middlewares and handlers
   req.user = user;
+  res.locals.user = user;
   next();
 });
 
@@ -233,7 +234,10 @@ function createTokenAndSend(user, res, statusCode, data = false) {
     status: "success",
     token,
   };
-  if (data) response.data = user;
+  if (data) {
+    user.password = undefined;
+    response.data = user;
+  }
   // create and attached it to response
   const cookieOptions = {
     expires: new Date(Date.now() + days(process.env.JWT_COOKIE_EXPIRES_IN)),
