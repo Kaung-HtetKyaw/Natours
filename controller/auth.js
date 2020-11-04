@@ -6,7 +6,7 @@ const { promisify } = require("util");
 
 const { catchAsyncError } = require("../utils/error");
 const { sendEmail } = require("../utils/email");
-const { days } = require("../utils/time");
+const { days, seconds } = require("../utils/time");
 
 exports.signUp = catchAsyncError(async (req, res, next) => {
   const newUser = await User.create({
@@ -36,6 +36,17 @@ exports.login = catchAsyncError(async (req, res, next) => {
   createTokenAndSend(user, res, 200, true);
 });
 
+// logging out the user by replacing the existing cookie with invalid cookie
+exports.logout = (req, res, next) => {
+  res.cookie("jwt", "loggedout", {
+    expires: new Date(Date.now() + seconds(10)),
+    httpOnly: true,
+  });
+  res.status(200).json({
+    status: "success",
+  });
+};
+
 exports.isAuthenticated = catchAsyncError(async (req, res, next) => {
   // check if token exists in http headers
   let token = retrieveTokenFromCookieOrHeader(req);
@@ -64,6 +75,7 @@ exports.isAuthenticated = catchAsyncError(async (req, res, next) => {
   }
   // provide user information for next middlewares and handlers
   req.user = user;
+  res.locals.user = user;
   next();
 });
 
@@ -78,30 +90,34 @@ exports.isAuthorized = (...roles) => {
   };
 };
 
-exports.isLoggedIn = catchAsyncError(async (req, res, next) => {
-  // check if token exists in http headers
-  let token = retrieveTokenFromCookieOrHeader(req);
-  if (token) {
-    // verify the token, if not valid, will thorw error automatically
-    const decodedToken = await promisify(jwt.verify)(
-      token,
-      process.env.JWT_SECRET
-    );
-    //check user still exists
-    const user = await User.findById(decodedToken.id);
-    if (!user) {
+exports.isLoggedIn = async (req, res, next) => {
+  try {
+    // check if token exists in http headers
+    let token = retrieveTokenFromCookieOrHeader(req);
+    if (token) {
+      // verify the token, if not valid, will thorw error automatically
+      const decodedToken = await promisify(jwt.verify)(
+        token,
+        process.env.JWT_SECRET
+      );
+      //check user still exists
+      const user = await User.findById(decodedToken.id);
+      if (!user) {
+        return next();
+      }
+      // check password is changed after token was issued
+      if (user.passwordChangedAfterIssued(decodedToken.iat)) {
+        return next();
+      }
+      // provide user information for next middlewares and handlers
+      res.locals.user = user;
       return next();
     }
-    // check password is changed after token was issued
-    if (user.passwordChangedAfterIssued(decodedToken.iat)) {
-      return next();
-    }
-    // provide user information for next middlewares and handlers
-    res.locals.user = user;
+    return next();
+  } catch (error) {
     return next();
   }
-  next();
-});
+};
 
 exports.forgotPassword = catchAsyncError(async (req, res, next) => {
   // check if user with email exists
@@ -218,7 +234,10 @@ function createTokenAndSend(user, res, statusCode, data = false) {
     status: "success",
     token,
   };
-  if (data) response.data = user;
+  if (data) {
+    user.password = undefined;
+    response.data = user;
+  }
   // create and attached it to response
   const cookieOptions = {
     expires: new Date(Date.now() + days(process.env.JWT_COOKIE_EXPIRES_IN)),
