@@ -50,7 +50,8 @@ exports.updateMe = catchAsyncError(async (req, res, next) => {
     );
   }
   // filter the request body
-  const filteredBody = filterRequestBody(req.body, "name,email");
+  let filteredBody = filterRequestBody(req.body, "name,email");
+  if (req.file) filteredBody.photo = req.file.filename;
   // update user info
   const user = await User.findByIdAndUpdate(req.user.id, filteredBody, {
     new: true,
