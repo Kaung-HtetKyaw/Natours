@@ -1,6 +1,6 @@
 import "@babel/polyfill";
 import { login, signup, logout } from "./login";
-import { updateMe, updatePassword } from "./updateSettings";
+import { updateSettings } from "./updateSettings";
 import { displayMap } from "./mapbox";
 
 // DOM
@@ -17,7 +17,6 @@ if (loginForm) {
     e.preventDefault();
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
-    console.log(email, password);
     login(email, password);
   });
 }
@@ -30,7 +29,6 @@ if (signupForm) {
     const password = document.getElementById("password").value;
     const confirmedPassword = document.getElementById("confirmedPassword")
       .value;
-    console.log(name, email, password, confirmedPassword);
     signup({ name, email, password, confirmedPassword });
   });
 }
@@ -40,9 +38,11 @@ if (logoutBtn) logoutBtn.addEventListener("click", logout);
 if (userDataForm) {
   userDataForm.addEventListener("submit", (e) => {
     e.preventDefault();
-    const email = document.getElementById("email").value;
-    const name = document.getElementById("name").value;
-    updateMe({ name, email });
+    let form = new FormData();
+    form.append("email", document.getElementById("email").value);
+    form.append("name", document.getElementById("name").value);
+    form.append("photo", document.getElementById("photo").files[0]);
+    updateSettings(form, "data");
   });
 }
 
@@ -53,7 +53,10 @@ if (userPassowrdForm) {
     const currentPassword = document.getElementById("password-current").value;
     const password = document.getElementById("password").value;
     const confirmedPassword = document.getElementById("password-confirm").value;
-    await updatePassword({ currentPassword, password, confirmedPassword });
+    await updateSettings(
+      { currentPassword, password, confirmedPassword },
+      "password"
+    );
     document.querySelector(".btn--save-password").textContent = "Save Password";
   });
 }

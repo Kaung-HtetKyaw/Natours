@@ -1,42 +1,24 @@
 import axios from "axios";
 import { showAlert } from "./alert";
-export const updateMe = async ({ name, password }) => {
+export const updateSettings = async (data, type) => {
   try {
-    const result = await axios({
-      method: "PATCH",
-      url: "http://localhost:8080/api/v1/users/updateMe",
-      data: {
-        name,
-        password,
-      },
-    });
-    if ((result.status = "success")) {
-      showAlert("success", "You've updated successfully.");
-    }
-  } catch (error) {
-    showAlert("error", error.response.data.message);
-  }
-};
+    const url =
+      type === "password"
+        ? "http://localhost:8080/api/v1/users/updatePassword"
+        : "http://localhost:8080/api/v1/users/updateMe";
 
-export const updatePassword = async ({
-  currentPassword,
-  password,
-  confirmedPassword,
-}) => {
-  try {
-    const result = await axios({
+    const res = await axios({
       method: "PATCH",
-      url: "http://localhost:8080/api/v1/users/updatePassword",
-      data: {
-        currentPassword,
-        password,
-        confirmedPassword,
-      },
+      url,
+      data,
     });
-    if ((result.status = "success")) {
-      showAlert("success", "Password've been updated successfully.");
+    console.log(res);
+
+    if (res.data.status === "success") {
+      showAlert("success", `${type.toUpperCase()} updated successfully!`);
     }
-  } catch (error) {
-    showAlert("error", error.response.data.message);
+  } catch (err) {
+    console.log(err);
+    showAlert("error", err.response.data.message);
   }
 };

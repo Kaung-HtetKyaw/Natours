@@ -40,6 +40,7 @@ export const signup = async (signUpData) => {
 };
 
 export const logout = async () => {
+  console.log("logout");
   try {
     const result = await axios({
       method: "GET",
