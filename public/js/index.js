@@ -17,7 +17,6 @@ if (loginForm) {
     e.preventDefault();
     const email = document.getElementById("email").value;
     const password = document.getElementById("password").value;
-    console.log(email, password);
     login(email, password);
   });
 }
@@ -30,7 +29,6 @@ if (signupForm) {
     const password = document.getElementById("password").value;
     const confirmedPassword = document.getElementById("confirmedPassword")
       .value;
-    console.log(name, email, password, confirmedPassword);
     signup({ name, email, password, confirmedPassword });
   });
 }

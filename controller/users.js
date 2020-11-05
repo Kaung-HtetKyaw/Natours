@@ -4,6 +4,29 @@ const AppError = require("../utils/api/AppError");
 const handlerFactory = require("../factory/handler");
 const { catchAsyncError } = require("../utils/error");
 const { makeMap } = require("../utils/utils");
+
+const multer = require("multer");
+const multerStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "public/img/users");
+  },
+  filename: (req, file, cb) => {
+    const ext = file.mimetype.split("/")[1];
+    cb(null, `user-${req.user.id}-${Date.now()}.${ext}`);
+  },
+});
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image")) {
+    cb(null, true);
+  } else {
+    cb(new AppError("Invalid File type.", 400), false);
+  }
+};
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
+
 //Users routes handlers
 exports.getAllUsers = handlerFactory.getAll(User);
 exports.getUser = handlerFactory.getOne(User);
@@ -12,8 +35,11 @@ exports.getMe = (req, res, next) => {
   req.params.id = req.user._id;
   next();
 };
+exports.uploadUserPhoto = upload.single("photo");
 // update my info
 exports.updateMe = catchAsyncError(async (req, res, next) => {
+  console.log(req.file);
+  console.log(req.body);
   // don't allow password
   if (!!req.body.password) {
     return next(
