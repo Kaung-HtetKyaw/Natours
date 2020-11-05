@@ -8529,35 +8529,36 @@ var logout = /*#__PURE__*/function () {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
-            _context3.prev = 0;
-            _context3.next = 3;
+            console.log("logout");
+            _context3.prev = 1;
+            _context3.next = 4;
             return (0, _axios.default)({
               method: "GET",
               url: "http://localhost:8080/api/v1/users/logout"
             });
 
-          case 3:
+          case 4:
             result = _context3.sent;
 
             if (result.status = "success") {
               location.assign("/");
             }
 
-            _context3.next = 11;
+            _context3.next = 12;
             break;
 
-          case 7:
-            _context3.prev = 7;
-            _context3.t0 = _context3["catch"](0);
+          case 8:
+            _context3.prev = 8;
+            _context3.t0 = _context3["catch"](1);
             console.log(_context3.t0.response);
             (0, _alert.showAlert)("error", _context3.t0.response.data.message);
 
-          case 11:
+          case 12:
           case "end":
             return _context3.stop();
         }
       }
-    }, _callee3, null, [[0, 7]]);
+    }, _callee3, null, [[1, 8]]);
   }));
 
   return function logout() {
@@ -9010,7 +9011,6 @@ if (loginForm) {
     e.preventDefault();
     var email = document.getElementById("email").value;
     var password = document.getElementById("password").value;
-    console.log(email, password);
     (0, _login.login)(email, password);
   });
 }
@@ -9022,7 +9022,6 @@ if (signupForm) {
     var name = document.getElementById("name").value;
     var password = document.getElementById("password").value;
     var confirmedPassword = document.getElementById("confirmedPassword").value;
-    console.log(name, email, password, confirmedPassword);
     (0, _login.signup)({
       name: name,
       email: email,
@@ -9116,11 +9115,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-<<<<<<< HEAD
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "35867" + '/');
-=======
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "39653" + '/');
->>>>>>> Serverside-Rendering-With-Pug-Templates
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "33375" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
