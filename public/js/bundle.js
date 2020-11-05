@@ -8573,7 +8573,7 @@ exports.logout = logout;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.updatePassword = exports.updateMe = void 0;
+exports.updateSettings = void 0;
 
 var _axios = _interopRequireDefault(require("axios"));
 
@@ -8585,104 +8585,53 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
-var updateMe = /*#__PURE__*/function () {
-  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(_ref) {
-    var name, password, result;
+var updateSettings = /*#__PURE__*/function () {
+  var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(data, type) {
+    var url, res;
     return regeneratorRuntime.wrap(function _callee$(_context) {
       while (1) {
         switch (_context.prev = _context.next) {
           case 0:
-            name = _ref.name, password = _ref.password;
-            _context.prev = 1;
+            _context.prev = 0;
+            url = type === "password" ? "http://localhost:8080/api/v1/users/updatePassword" : "http://localhost:8080/api/v1/users/updateMe";
             _context.next = 4;
             return (0, _axios.default)({
               method: "PATCH",
-              url: "http://localhost:8080/api/v1/users/updateMe",
-              data: {
-                name: name,
-                password: password
-              }
+              url: url,
+              data: data
             });
 
           case 4:
-            result = _context.sent;
+            res = _context.sent;
+            console.log(res);
 
-            if (result.status = "success") {
-              (0, _alert.showAlert)("success", "You've updated successfully.");
+            if (res.data.status === "success") {
+              (0, _alert.showAlert)("success", "".concat(type.toUpperCase(), " updated successfully!"));
             }
 
-            _context.next = 11;
+            _context.next = 13;
             break;
 
-          case 8:
-            _context.prev = 8;
-            _context.t0 = _context["catch"](1);
+          case 9:
+            _context.prev = 9;
+            _context.t0 = _context["catch"](0);
+            console.log(_context.t0);
             (0, _alert.showAlert)("error", _context.t0.response.data.message);
 
-          case 11:
+          case 13:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[1, 8]]);
+    }, _callee, null, [[0, 9]]);
   }));
 
-  return function updateMe(_x) {
-    return _ref2.apply(this, arguments);
+  return function updateSettings(_x, _x2) {
+    return _ref.apply(this, arguments);
   };
 }();
 
-exports.updateMe = updateMe;
-
-var updatePassword = /*#__PURE__*/function () {
-  var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(_ref3) {
-    var currentPassword, password, confirmedPassword, result;
-    return regeneratorRuntime.wrap(function _callee2$(_context2) {
-      while (1) {
-        switch (_context2.prev = _context2.next) {
-          case 0:
-            currentPassword = _ref3.currentPassword, password = _ref3.password, confirmedPassword = _ref3.confirmedPassword;
-            _context2.prev = 1;
-            _context2.next = 4;
-            return (0, _axios.default)({
-              method: "PATCH",
-              url: "http://localhost:8080/api/v1/users/updatePassword",
-              data: {
-                currentPassword: currentPassword,
-                password: password,
-                confirmedPassword: confirmedPassword
-              }
-            });
-
-          case 4:
-            result = _context2.sent;
-
-            if (result.status = "success") {
-              (0, _alert.showAlert)("success", "Password've been updated successfully.");
-            }
-
-            _context2.next = 11;
-            break;
-
-          case 8:
-            _context2.prev = 8;
-            _context2.t0 = _context2["catch"](1);
-            (0, _alert.showAlert)("error", _context2.t0.response.data.message);
-
-          case 11:
-          case "end":
-            return _context2.stop();
-        }
-      }
-    }, _callee2, null, [[1, 8]]);
-  }));
-
-  return function updatePassword(_x2) {
-    return _ref4.apply(this, arguments);
-  };
-}();
-
-exports.updatePassword = updatePassword;
+exports.updateSettings = updateSettings;
 },{"axios":"../../node_modules/axios/index.js","./alert":"alert.js"}],"mapbox.js":[function(require,module,exports) {
 "use strict";
 
@@ -9036,12 +8985,11 @@ if (logoutBtn) logoutBtn.addEventListener("click", _login.logout);
 if (userDataForm) {
   userDataForm.addEventListener("submit", function (e) {
     e.preventDefault();
-    var email = document.getElementById("email").value;
-    var name = document.getElementById("name").value;
-    (0, _updateSettings.updateMe)({
-      name: name,
-      email: email
-    });
+    var form = new FormData();
+    form.append("email", document.getElementById("email").value);
+    form.append("name", document.getElementById("name").value);
+    form.append("photo", document.getElementById("photo").files[0]);
+    (0, _updateSettings.updateSettings)(form, "data");
   });
 }
 
@@ -9059,11 +9007,11 @@ if (userPassowrdForm) {
               password = document.getElementById("password").value;
               confirmedPassword = document.getElementById("password-confirm").value;
               _context.next = 7;
-              return (0, _updateSettings.updatePassword)({
+              return (0, _updateSettings.updateSettings)({
                 currentPassword: currentPassword,
                 password: password,
                 confirmedPassword: confirmedPassword
-              });
+              }, "password");
 
             case 7:
               document.querySelector(".btn--save-password").textContent = "Save Password";
@@ -9115,7 +9063,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "33375" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "44253" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

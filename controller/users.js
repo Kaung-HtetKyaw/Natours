@@ -53,8 +53,6 @@ exports.resizeUserPhoto = (req, res, next) => {
 };
 // update my info
 exports.updateMe = catchAsyncError(async (req, res, next) => {
-  console.log(req.file);
-  console.log(req.body);
   // don't allow password
   if (!!req.body.password) {
     return next(
