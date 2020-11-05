@@ -1,12 +1,60 @@
 const rootDir = require("../utils/path");
 const { catchAsyncError } = require("../utils/error");
 const { radiusToRadian } = require("../utils/utils");
+const sharp = require("sharp");
+const multer = require("multer");
 
 const APIFeatures = require("../utils/api/APIFeatures");
 const AppError = require("../utils/api/AppError");
 const handlerFactory = require("../factory/handler");
 //Model
 const Tour = require(`${rootDir}/model/Tours`);
+
+const multerStorage = multer.memoryStorage();
+const multerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image")) {
+    cb(null, true);
+  } else {
+    cb(new AppError("Invalid File type.", 400), false);
+  }
+};
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: multerFilter,
+});
+
+// image uploading and processing
+exports.uploadTourImages = upload.fields([
+  { name: "imageCover", maxCount: 1 },
+  { name: "images", maxCount: 3 },
+]);
+exports.resizeTourImages = catchAsyncError(async (req, res, next) => {
+  if (!req.files.imageCover || !req.files.images) {
+    return next();
+  }
+  // resize cover image
+  req.body.imageCover = `tour-${req.params.id}-${Date.now()}-cover.jpeg`;
+  await sharp(req.files.imageCover[0].buffer)
+    .resize(500, 500)
+    .toFormat("jpeg")
+    .jpeg({ quality: 90 })
+    .toFile(`public/img/tours/${req.body.imageCover}`);
+
+  // resize footage images
+  req.body.images = [];
+  await Promise.all(
+    req.files.images.map(async (file, index) => {
+      const filename = `tour-${req.params.id}-${Date.now()}-${index + 1}.jpeg`;
+      await sharp(file.buffer)
+        .resize(500, 500)
+        .toFormat("jpeg")
+        .jpeg({ quality: 90 })
+        .toFile(`public/img/tours/${filename}`);
+      req.body.images.push(filename);
+    })
+  );
+  next();
+});
 
 //Posts route handlers
 exports.getAllTours = handlerFactory.getAll(Tour);

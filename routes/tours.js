@@ -40,6 +40,8 @@ router
   .patch(
     authController.isAuthenticated,
     authController.isAuthorized("admin", "lead"),
+    toursController.uploadTourImages,
+    toursController.resizeTourImages,
     toursController.updateTour
   )
   .delete(
