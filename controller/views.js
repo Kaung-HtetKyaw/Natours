@@ -33,3 +33,9 @@ exports.getAccount = (req, res) => {
     title: "Your account",
   });
 };
+
+exports.getPasswordReset = (req, res) => {
+  res.status(200).render("passwordReset", {
+    title: "Reset Your Password",
+  });
+};
