@@ -8573,7 +8573,7 @@ exports.logout = logout;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.updateSettings = void 0;
+exports.resetPassword = exports.forgotPassword = exports.updateSettings = void 0;
 
 var _axios = _interopRequireDefault(require("axios"));
 
@@ -8632,6 +8632,104 @@ var updateSettings = /*#__PURE__*/function () {
 }();
 
 exports.updateSettings = updateSettings;
+
+var forgotPassword = /*#__PURE__*/function () {
+  var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(email) {
+    var url, res;
+    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            _context2.prev = 0;
+            url = "http://localhost:8080/api/v1/users/forgotPassword";
+            _context2.next = 4;
+            return (0, _axios.default)({
+              method: "POST",
+              url: url,
+              data: {
+                email: email
+              }
+            });
+
+          case 4:
+            res = _context2.sent;
+            console.log(res);
+
+            if (res.data.status === "success") {
+              (0, _alert.showAlert)("success", "Password reset link has been sent to your email address");
+            }
+
+            _context2.next = 13;
+            break;
+
+          case 9:
+            _context2.prev = 9;
+            _context2.t0 = _context2["catch"](0);
+            console.log(_context2.t0);
+            (0, _alert.showAlert)("error", _context2.t0.response.data.message);
+
+          case 13:
+          case "end":
+            return _context2.stop();
+        }
+      }
+    }, _callee2, null, [[0, 9]]);
+  }));
+
+  return function forgotPassword(_x3) {
+    return _ref2.apply(this, arguments);
+  };
+}();
+
+exports.forgotPassword = forgotPassword;
+
+var resetPassword = /*#__PURE__*/function () {
+  var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(data) {
+    var token, url, res;
+    return regeneratorRuntime.wrap(function _callee3$(_context3) {
+      while (1) {
+        switch (_context3.prev = _context3.next) {
+          case 0:
+            _context3.prev = 0;
+            token = window.location.href.split("/resetPassword/")[1];
+            url = "http://localhost:8080/api/v1/users/resetPassword/".concat(token);
+            _context3.next = 5;
+            return (0, _axios.default)({
+              method: "PATCH",
+              url: url,
+              data: data
+            });
+
+          case 5:
+            res = _context3.sent;
+
+            if (res.data.status === "success") {
+              (0, _alert.showAlert)("success", "Password has been updated successfully");
+            }
+
+            _context3.next = 13;
+            break;
+
+          case 9:
+            _context3.prev = 9;
+            _context3.t0 = _context3["catch"](0);
+            console.log(_context3.t0);
+            (0, _alert.showAlert)("error", _context3.t0.response.data.message);
+
+          case 13:
+          case "end":
+            return _context3.stop();
+        }
+      }
+    }, _callee3, null, [[0, 9]]);
+  }));
+
+  return function resetPassword(_x4) {
+    return _ref3.apply(this, arguments);
+  };
+}();
+
+exports.resetPassword = resetPassword;
 },{"axios":"../../node_modules/axios/index.js","./alert":"alert.js"}],"mapbox.js":[function(require,module,exports) {
 "use strict";
 
@@ -8953,7 +9051,9 @@ var loginForm = document.querySelector(".form--login");
 var signupForm = document.querySelector(".form--signup");
 var logoutBtn = document.querySelector(".nav__el--logout");
 var userDataForm = document.querySelector(".form-user-data");
-var userPassowrdForm = document.querySelector(".form-user-password"); // values
+var userPassowrdForm = document.querySelector(".form-user-password");
+var forgotPasswordBtn = document.querySelector(".btn--forgot-password");
+var resetPasswordForm = document.querySelector(".form--forgot-password"); // values
 
 if (loginForm) {
   loginForm.addEventListener("submit", function (e) {
@@ -9028,6 +9128,61 @@ if (userPassowrdForm) {
       return _ref.apply(this, arguments);
     };
   }());
+}
+
+if (forgotPasswordBtn) {
+  forgotPasswordBtn.addEventListener("click", /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
+    return regeneratorRuntime.wrap(function _callee2$(_context2) {
+      while (1) {
+        switch (_context2.prev = _context2.next) {
+          case 0:
+            _context2.next = 2;
+            return (0, _updateSettings.forgotPassword)(document.getElementById("email").value);
+
+          case 2:
+          case "end":
+            return _context2.stop();
+        }
+      }
+    }, _callee2);
+  })));
+}
+
+if (resetPasswordForm) {
+  resetPasswordForm.addEventListener("submit", /*#__PURE__*/function () {
+    var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(e) {
+      var currentPassword, password, confirmedPassword;
+      return regeneratorRuntime.wrap(function _callee3$(_context3) {
+        while (1) {
+          switch (_context3.prev = _context3.next) {
+            case 0:
+              e.preventDefault();
+              document.querySelector(".btn--reset-password").textContent = "Updating";
+              currentPassword = document.getElementById("password-current").value;
+              password = document.getElementById("password").value;
+              confirmedPassword = document.getElementById("password-confirm").value;
+              _context3.next = 7;
+              return (0, _updateSettings.resetPassword)({
+                currentPassword: currentPassword,
+                password: password,
+                confirmedPassword: confirmedPassword
+              });
+
+            case 7:
+              document.querySelector(".btn--reset-password").textContent = "Update Password";
+
+            case 8:
+            case "end":
+              return _context3.stop();
+          }
+        }
+      }, _callee3);
+    }));
+
+    return function (_x2) {
+      return _ref3.apply(this, arguments);
+    };
+  }());
 } // delegate
 
 
@@ -9063,7 +9218,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "40629" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "37103" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

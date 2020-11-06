@@ -5,7 +5,7 @@ const crypto = require("crypto");
 const { promisify } = require("util");
 
 const { catchAsyncError } = require("../utils/error");
-const { sendEmail } = require("../utils/email");
+const Email = require("../utils/email");
 const { days, seconds } = require("../utils/time");
 
 exports.signUp = catchAsyncError(async (req, res, next) => {
@@ -14,7 +14,11 @@ exports.signUp = catchAsyncError(async (req, res, next) => {
     email: req.body.email,
     password: req.body.password,
     confirmedPassword: req.body.confirmedPassword,
-  }); // dont save the whole req body
+  }); //! dont save the whole req body
+
+  // sending mail to the user
+  const url = `${req.protocol}://${req.get("host")}/me`;
+  await new Email(newUser, url).sendWelcome();
   createTokenAndSend(newUser, res, 201, true);
 });
 
@@ -133,7 +137,10 @@ exports.forgotPassword = catchAsyncError(async (req, res, next) => {
 
   // send it to user email and handling potential error from sendEmail(nodemailer)
   try {
-    await sendEmail(generateMailOptions(req, resetToken, user));
+    const resetURL = `${req.protocol}://${req.get(
+      "host"
+    )}/api/v1/resetPassword/${resetToken}`;
+    await new Email(user, resetURL).sendPasswordReset();
     res.status(200).json({
       status: "success",
       message: "Reset URL have already been sent to your email address",
@@ -214,18 +221,6 @@ function retrieveTokenFromCookieOrHeader(request) {
     token = request.cookies.jwt;
   }
   return token;
-}
-
-function generateMailOptions(req, resetToken, user) {
-  const resetURL = `${req.protocol}://${req.get(
-    "host"
-  )}/api/v1/resetPassword/${resetToken}`;
-  const message = `Forget Password? Please send a PATCH request to ${resetURL} along with your email address and new password`;
-  return {
-    email: user.email,
-    subject: "Your password reset token (valid for 10 mins)",
-    message,
-  };
 }
 
 function createTokenAndSend(user, res, statusCode, data = false) {
