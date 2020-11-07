@@ -19,7 +19,7 @@ const forgotPasswordBtn = document.querySelector(".btn--forgot-password");
 const resetPasswordForm = document.querySelector(".form--forgot-password");
 const bookBtn = document.getElementById("book-btn");
 
-// values
+// loggin in
 if (loginForm) {
   loginForm.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -29,6 +29,7 @@ if (loginForm) {
   });
 }
 
+// signing up
 if (signupForm) {
   signupForm.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -41,8 +42,10 @@ if (signupForm) {
   });
 }
 
+// logging out
 if (logoutBtn) logoutBtn.addEventListener("click", logout);
 
+// updating info
 if (userDataForm) {
   userDataForm.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -54,6 +57,7 @@ if (userDataForm) {
   });
 }
 
+// updating password
 if (userPassowrdForm) {
   userPassowrdForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -69,12 +73,14 @@ if (userPassowrdForm) {
   });
 }
 
+// fogetting password
 if (forgotPasswordBtn) {
   forgotPasswordBtn.addEventListener("click", async () => {
     await forgotPassword(document.getElementById("email").value);
   });
 }
 
+// resetting password
 if (resetPasswordForm) {
   resetPasswordForm.addEventListener("submit", async (e) => {
     e.preventDefault();
