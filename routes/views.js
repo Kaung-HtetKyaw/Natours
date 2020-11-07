@@ -16,6 +16,11 @@ router.get("/login", authController.isLoggedIn, viewsController.getLogin);
 router.get("/signup", authController.isLoggedIn, viewsController.getSignUp);
 router.get("/me", authController.isAuthenticated, viewsController.getAccount);
 router.get(
+  "/my-tours",
+  authController.isAuthenticated,
+  viewsController.getMyTours
+);
+router.get(
   "/resetPassword/:token",
   authController.isAuthenticated,
   viewsController.getPasswordReset
