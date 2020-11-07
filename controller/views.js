@@ -21,11 +21,11 @@ exports.getTour = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getLogin = async (req, res) => {
-  res.status(200).render("login");
+  res.status(200).render("login", { title: "Login" });
 };
 
 exports.getSignUp = async (req, res) => {
-  res.status(200).render("signup");
+  res.status(200).render("signup", { title: "Sign Up" });
 };
 
 exports.getAccount = (req, res) => {

@@ -17,6 +17,7 @@ const tourRouter = require("./routes/tours");
 const userRouter = require("./routes/users");
 const reviewRouter = require("./routes/reviews");
 const viewRouter = require("./routes/views");
+const bookingRouter = require("./routes/bookings");
 
 const app = express();
 
@@ -61,10 +62,12 @@ app.use(
 //   next();
 // });
 app.use("/", viewRouter);
+
 //route middlewares🌎
 app.use("/api/v1/tours", tourRouter);
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/reviews", reviewRouter);
+app.use("/api/v1/bookings", bookingRouter);
 
 //catch 404 error ⚠
 app.all("*", (req, res, next) => {
