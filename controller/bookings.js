@@ -48,3 +48,9 @@ exports.createBookingCheckout = catchAsyncError(async (req, res, next) => {
   const newBooking = await Booking.create({ tour, user, price });
   res.redirect(`${req.originalUrl.split("?")[0]}`);
 });
+
+exports.getAllBookings = handlerFactory.getAll(Booking);
+exports.getBooking = handlerFactory.getOne(Booking);
+exports.createBooking = handlerFactory.createOne(Booking);
+exports.updateBooking = handlerFactory.updateOne(Booking);
+exports.deleteBooking = handlerFactory.deleteOne(Booking);
