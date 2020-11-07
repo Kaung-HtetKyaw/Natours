@@ -5,6 +5,7 @@ import {
   forgotPassword,
   resetPassword,
 } from "./updateSettings";
+import { bookTour } from "./stripe";
 import { displayMap } from "./mapbox";
 
 // DOM
@@ -16,6 +17,7 @@ const userDataForm = document.querySelector(".form-user-data");
 const userPassowrdForm = document.querySelector(".form-user-password");
 const forgotPasswordBtn = document.querySelector(".btn--forgot-password");
 const resetPasswordForm = document.querySelector(".form--forgot-password");
+const bookBtn = document.getElementById("book-btn");
 
 // values
 if (loginForm) {
@@ -83,6 +85,17 @@ if (resetPasswordForm) {
     await resetPassword({ currentPassword, password, confirmedPassword });
     document.querySelector(".btn--reset-password").textContent =
       "Update Password";
+  });
+}
+
+// booking a tour
+if (bookBtn) {
+  bookBtn.addEventListener("click", async (e) => {
+    const originalTextContent = e.target.textContent;
+    e.target.textContent = "Purchasing......";
+    const tourId = e.target.dataset.tourId;
+    await bookTour(tourId);
+    e.target.textContent = originalTextContent;
   });
 }
 
