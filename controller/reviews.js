@@ -1,8 +1,5 @@
 const Review = require("../model/Reviews");
-const Tour = require("../model/Tours");
-const AppError = require("../utils//api/AppError");
 const handlerFactory = require("../factory/handler");
-const { catchAsyncError } = require("../utils/error");
 
 exports.setTourAndUserID = (req, res, next) => {
   if (!req.body.tour) req.body.tour = req.params.tourId;

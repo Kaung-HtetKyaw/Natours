@@ -1,4 +1,5 @@
 const Tour = require("../model/Tours");
+const Booking = require("../model/Bookings");
 const AppError = require("../utils/api/AppError");
 const { catchAsyncError } = require("../utils/error");
 
@@ -21,11 +22,11 @@ exports.getTour = catchAsyncError(async (req, res, next) => {
 });
 
 exports.getLogin = async (req, res) => {
-  res.status(200).render("login");
+  res.status(200).render("login", { title: "Login" });
 };
 
 exports.getSignUp = async (req, res) => {
-  res.status(200).render("signup");
+  res.status(200).render("signup", { title: "Sign Up" });
 };
 
 exports.getAccount = (req, res) => {
@@ -39,3 +40,14 @@ exports.getPasswordReset = (req, res) => {
     title: "Reset Your Password",
   });
 };
+
+// get the tours the user has booked before
+exports.getMyTours = catchAsyncError(async (req, res, next) => {
+  const bookings = await Booking.find({ user: req.user.id });
+  const tourIds = bookings.map((booking) => booking.tour);
+  const tours = await Tour.find({ _id: { $in: tourIds } });
+  res.status(200).render("overview", {
+    title: "My Bookings",
+    tours,
+  });
+});

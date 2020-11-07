@@ -5,6 +5,7 @@ import {
   forgotPassword,
   resetPassword,
 } from "./updateSettings";
+import { bookTour } from "./stripe";
 import { displayMap } from "./mapbox";
 
 // DOM
@@ -16,8 +17,9 @@ const userDataForm = document.querySelector(".form-user-data");
 const userPassowrdForm = document.querySelector(".form-user-password");
 const forgotPasswordBtn = document.querySelector(".btn--forgot-password");
 const resetPasswordForm = document.querySelector(".form--forgot-password");
+const bookBtn = document.getElementById("book-btn");
 
-// values
+// loggin in
 if (loginForm) {
   loginForm.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -27,6 +29,7 @@ if (loginForm) {
   });
 }
 
+// signing up
 if (signupForm) {
   signupForm.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -39,8 +42,10 @@ if (signupForm) {
   });
 }
 
+// logging out
 if (logoutBtn) logoutBtn.addEventListener("click", logout);
 
+// updating info
 if (userDataForm) {
   userDataForm.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -52,6 +57,7 @@ if (userDataForm) {
   });
 }
 
+// updating password
 if (userPassowrdForm) {
   userPassowrdForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -67,12 +73,14 @@ if (userPassowrdForm) {
   });
 }
 
+// fogetting password
 if (forgotPasswordBtn) {
   forgotPasswordBtn.addEventListener("click", async () => {
     await forgotPassword(document.getElementById("email").value);
   });
 }
 
+// resetting password
 if (resetPasswordForm) {
   resetPasswordForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -83,6 +91,17 @@ if (resetPasswordForm) {
     await resetPassword({ currentPassword, password, confirmedPassword });
     document.querySelector(".btn--reset-password").textContent =
       "Update Password";
+  });
+}
+
+// booking a tour
+if (bookBtn) {
+  bookBtn.addEventListener("click", async (e) => {
+    const originalTextContent = e.target.textContent;
+    e.target.textContent = "Purchasing......";
+    const tourId = e.target.dataset.tourId;
+    await bookTour(tourId);
+    e.target.textContent = originalTextContent;
   });
 }
 

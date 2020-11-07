@@ -4,57 +4,70 @@ const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const { minutes } = require("../utils/time");
 
-const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, "Please tell us your name!"],
-  },
-  role: {
-    type: String,
-    default: "user",
-    enum: {
-      values: ["user", "guide", "lead", "admin"],
-      message: "Invalid Role.",
+const options = {
+  toJSON: { virtuals: true },
+  toObject: { virtuals: true },
+};
+const userSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: [true, "Please tell us your name!"],
     },
-  },
-  email: {
-    type: String,
-    required: [true, "Please provide a email!"],
-    unique: true,
-    validate: {
-      validator: validator.isEmail,
-      message: "Please provide a valid email address",
-    },
-    lowercase: true,
-  },
-  photo: {
-    type: String,
-    default: "default.jpg",
-  },
-  password: {
-    type: String,
-    required: [true, "Please provide a password"],
-    select: false,
-  },
-  confirmedPassword: {
-    type: String,
-    required: [true, "Please confirm your password"],
-    validate: {
-      validator: function (value) {
-        return this.password === value;
+    role: {
+      type: String,
+      default: "user",
+      enum: {
+        values: ["user", "guide", "lead", "admin"],
+        message: "Invalid Role.",
       },
-      message: "Password don't match",
+    },
+    email: {
+      type: String,
+      required: [true, "Please provide a email!"],
+      unique: true,
+      validate: {
+        validator: validator.isEmail,
+        message: "Please provide a valid email address",
+      },
+      lowercase: true,
+    },
+    photo: {
+      type: String,
+      default: "default.jpg",
+    },
+    password: {
+      type: String,
+      required: [true, "Please provide a password"],
+      select: false,
+    },
+    confirmedPassword: {
+      type: String,
+      required: [true, "Please confirm your password"],
+      validate: {
+        validator: function (value) {
+          return this.password === value;
+        },
+        message: "Password don't match",
+      },
+    },
+    passwordChangedAt: Date,
+    passwordResetToken: String,
+    passwordResetExpiresAt: Date,
+    active: {
+      type: Boolean,
+      default: true,
+      select: false,
     },
   },
-  passwordChangedAt: Date,
-  passwordResetToken: String,
-  passwordResetExpiresAt: Date,
-  active: {
-    type: Boolean,
-    default: true,
-    select: false,
-  },
-});
+  options
+);
+
+// userSchema.virtual("bookings", {
+//   ref: "Booking",
+//   foreignField: "user",
+//   localField: "_id",
+// });
 
 // plain text password to encrypted password only when user create new or update
 userSchema.pre("save", async function (next) {
@@ -75,6 +88,13 @@ userSchema.pre(/^find/, function (next) {
   this.find({ active: { $ne: false } });
   next();
 });
+// userSchema.pre(/^findOne/, function (next) {
+//   this.populate({
+//     path: "bookings",
+//     select: "tour price",
+//   });
+//   next();
+// });
 
 // create instance methods
 userSchema.methods.isCorrectPassword = async function (
