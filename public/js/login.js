@@ -11,12 +11,17 @@ export const login = async (email, password) => {
       },
     });
     if ((result.status = "success")) {
+      if (!result.data.data) {
+        showAlert("success", result.data.message);
+        return;
+      }
       showAlert("success", "You've been logged in successfully.");
       setTimeout(() => {
         location.assign("/");
       }, 1000);
     }
   } catch (error) {
+    console.log(error.response);
     showAlert("error", error.response.data.message);
   }
 };
@@ -29,10 +34,7 @@ export const signup = async (signUpData) => {
       data: signUpData,
     });
     if ((result.status = "success")) {
-      showAlert("success", "You've been signed successfully.");
-      setTimeout(() => {
-        location.assign("/");
-      }, 1000);
+      showAlert("success", result.data.message);
     }
   } catch (error) {
     showAlert("error", error.response.data.message);
@@ -40,7 +42,6 @@ export const signup = async (signUpData) => {
 };
 
 export const logout = async () => {
-  console.log("logout");
   try {
     const result = await axios({
       method: "GET",
@@ -48,6 +49,26 @@ export const logout = async () => {
     });
     if ((result.status = "success")) {
       location.assign("/");
+    }
+  } catch (error) {
+    console.log(error.response);
+    showAlert("error", error.response.data.message);
+  }
+};
+
+export const verify = async () => {
+  try {
+    const token = window.location.href.split("/verify/")[1];
+    const url = `http://localhost:8080/api/v1/users/verify/${token}`;
+    const result = await axios({
+      method: "PATCH",
+      url,
+    });
+    if ((result.status = "success")) {
+      showAlert("success", "Your account is verified now.");
+      setTimeout(() => {
+        location.assign("/");
+      }, 1000);
     }
   } catch (error) {
     console.log(error.response);

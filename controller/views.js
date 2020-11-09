@@ -40,6 +40,9 @@ exports.getPasswordReset = (req, res) => {
     title: "Reset Your Password",
   });
 };
+exports.getVerify = (req, res) => {
+  res.status(200).render("verify");
+};
 
 // get the tours the user has booked before
 exports.getMyTours = catchAsyncError(async (req, res, next) => {

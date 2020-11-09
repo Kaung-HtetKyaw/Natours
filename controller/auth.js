@@ -16,10 +16,53 @@ exports.signUp = catchAsyncError(async (req, res, next) => {
     confirmedPassword: req.body.confirmedPassword,
   }); //! dont save the whole req body
 
+  try {
+    // sending mail to the user
+    await sendVerificationMail(req, newUser);
+    res.status(200).json({
+      status: "success",
+      message: `Verification email has been sent to your email address. Please verify your account`,
+    });
+  } catch (error) {
+    newUser.verficationToken = undefined;
+    newUser.verficationExpiresAt = undefined;
+    await newUser.save({ validateBeforeSave: false });
+    return next(
+      new AppError(
+        `There was an error sending verification email. Please try again`,
+        500
+      )
+    );
+  }
+});
+
+exports.verifyAccount = catchAsyncError(async (req, res, next) => {
+  // find the user with given reset token which is still valid
+  const hashedToken = crypto
+    .createHash("sha256")
+    .update(req.params.token)
+    .digest("hex");
+  const user = await User.findOne({
+    verificationToken: hashedToken,
+    verficationExpiresAt: { $gt: Date.now() },
+  }).select("+pending");
+  // if token still valid and user exists , set the new password
+  if (!user) {
+    return next(
+      new AppError("Invalid token or Token has already expired", 400)
+    );
+  }
+  if (user.pending !== true) {
+    return next(new AppError("Your account has already been verified", 401));
+  }
+  user.pending = false;
+  user.verificationToken = undefined;
+  user.verficationExpiresAt = undefined;
+  await user.save({ validateBeforeSave: false });
   // sending mail to the user
   const url = `${req.protocol}://${req.get("host")}/me`;
-  await new Email(newUser, url).sendWelcome();
-  createTokenAndSend(newUser, res, 201, true);
+  await new Email(user, url).sendWelcome();
+  createTokenAndSend(user, res, 201, true);
 });
 
 exports.login = catchAsyncError(async (req, res, next) => {
@@ -29,12 +72,32 @@ exports.login = catchAsyncError(async (req, res, next) => {
     return next(new AppError("Please provide both email and password", 400));
   }
   // check if user exits and password is correct
-  const user = await User.findOne({ email }).select("+password");
+  const user = await User.findOne({ email }).select("+password +pending");
   const isCorrectPassword = !!user
     ? await user.isCorrectPassword(password, user.password)
     : false;
   if (!user || !isCorrectPassword) {
     return next(new AppError("Invalid email or password", 401));
+  }
+  // if account is not verified
+  if (user.pending === true) {
+    try {
+      await sendVerificationMail(req, user);
+      return res.status(200).json({
+        status: "success",
+        message: `Your account is not verified yet. Verification email has been sent to your email address`,
+      });
+    } catch (error) {
+      user.verficationToken = undefined;
+      user.verficationExpiresAt = undefined;
+      await user.save({ validateBeforeSave: false });
+      return next(
+        new AppError(
+          `There was an error sending verification email. Please try again`,
+          500
+        )
+      );
+    }
   }
   // send response back to client
   createTokenAndSend(user, res, 200, true);
@@ -96,7 +159,7 @@ exports.isAuthorized = (...roles) => {
 
 exports.isLoggedIn = async (req, res, next) => {
   try {
-    // check if token exists in http headers
+    // check if token exists in http headers/cookies
     let token = retrieveTokenFromCookieOrHeader(req);
     if (token) {
       // verify the token, if not valid, will thorw error automatically
@@ -242,4 +305,15 @@ function createTokenAndSend(user, res, statusCode, data = false) {
   res.cookie("jwt", token, cookieOptions);
   // send the response
   res.status(statusCode).json(response);
+}
+
+async function sendVerificationMail(req, user) {
+  // generate the verfication token
+  const verficationToken = user.generateVerifyToken();
+  await user.save({ validateBeforeSave: false });
+  // sending mail to the user
+  const url = `${req.protocol}://${req.get(
+    "host"
+  )}/api/v1/verify/${verficationToken}`;
+  await new Email(user, url).sendVerfication();
 }

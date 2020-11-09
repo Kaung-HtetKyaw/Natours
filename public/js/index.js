@@ -1,5 +1,5 @@
 import "@babel/polyfill";
-import { login, signup, logout } from "./login";
+import { login, signup, logout, verify } from "./login";
 import {
   updateSettings,
   forgotPassword,
@@ -18,6 +18,7 @@ const userPassowrdForm = document.querySelector(".form-user-password");
 const forgotPasswordBtn = document.querySelector(".btn--forgot-password");
 const resetPasswordForm = document.querySelector(".form--forgot-password");
 const bookBtn = document.getElementById("book-btn");
+const verifyBtn = document.getElementById("btn-verify");
 
 // loggin in
 if (loginForm) {
@@ -85,10 +86,9 @@ if (resetPasswordForm) {
   resetPasswordForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     document.querySelector(".btn--reset-password").textContent = "Updating";
-    const currentPassword = document.getElementById("password-current").value;
     const password = document.getElementById("password").value;
     const confirmedPassword = document.getElementById("password-confirm").value;
-    await resetPassword({ currentPassword, password, confirmedPassword });
+    await resetPassword({ password, confirmedPassword });
     document.querySelector(".btn--reset-password").textContent =
       "Update Password";
   });
@@ -101,6 +101,15 @@ if (bookBtn) {
     e.target.textContent = "Purchasing......";
     const tourId = e.target.dataset.tourId;
     await bookTour(tourId);
+    e.target.textContent = originalTextContent;
+  });
+}
+
+if (verifyBtn) {
+  verifyBtn.addEventListener("click", async (e) => {
+    const originalTextContent = e.target.textContent;
+    e.target.textContent = "Verifying......";
+    await verify();
     e.target.textContent = originalTextContent;
   });
 }

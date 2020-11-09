@@ -3,6 +3,7 @@ const validator = require("validator");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const { minutes } = require("../utils/time");
+const { generateHashedToken } = require("../utils/utils");
 
 const options = {
   toJSON: { virtuals: true },
@@ -58,6 +59,13 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
       select: false,
+    },
+    verificationToken: String,
+    verficationExpiresAt: Date,
+    pending: {
+      type: Boolean,
+      select: false,
+      default: true,
     },
   },
   options
@@ -115,14 +123,16 @@ userSchema.methods.passwordChangedAfterIssued = function (JWT_iat) {
   return false;
 };
 userSchema.methods.generateResetPasswordToken = function () {
-  const resetToken = crypto.randomBytes(32).toString("hex"); // normal token which will be sent to client
-  this.passwordResetToken = crypto
-    .createHash("sha256")
-    .update(resetToken)
-    .digest("hex"); // encrypted whick will be stored in the db
-  console.log({ resetToken, passwordResetToken: this.passwordResetToken });
-  this.passwordResetExpiresAt = Date.now() + minutes(10); // will expires after 10 mins
-  return resetToken;
+  const { unhashedToken, hashedToken, expiresAt } = generateHashedToken();
+  this.passwordResetToken = hashedToken; // encrypted whick will be stored in the db
+  this.passwordResetExpiresAt = expiresAt(); // will expires after 10 mins
+  return unhashedToken;
+};
+userSchema.methods.generateVerifyToken = function () {
+  const { unhashedToken, hashedToken, expiresAt } = generateHashedToken();
+  this.verificationToken = hashedToken;
+  this.verficationExpiresAt = expiresAt();
+  return unhashedToken;
 };
 
 const User = mongoose.model("User", userSchema);
