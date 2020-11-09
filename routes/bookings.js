@@ -3,15 +3,12 @@ const router = express.Router();
 const bookingsController = require("../controller/bookings");
 const authController = require("../controller/auth");
 
-router.get(
-  "/checkout-session/:tourId",
-  authController.isAuthenticated,
-  bookingsController.getCheckoutSession
-);
-router.use(
-  authController.isAuthenticated,
-  authController.isAuthorized("admin")
-);
+router.use(authController.isAuthenticated);
+
+router.get("/checkout-session/:tourId", bookingsController.getCheckoutSession);
+
+router.use(authController.isAuthorized("admin,lead"));
+
 router.get("/", bookingsController.getAllBookings);
 router
   .route("/:id")

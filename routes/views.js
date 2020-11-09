@@ -25,5 +25,6 @@ router.get(
   authController.isAuthenticated,
   viewsController.getPasswordReset
 );
+router.get("/verify/:token", viewsController.getVerify);
 
 module.exports = router;

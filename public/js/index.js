@@ -85,10 +85,9 @@ if (resetPasswordForm) {
   resetPasswordForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     document.querySelector(".btn--reset-password").textContent = "Updating";
-    const currentPassword = document.getElementById("password-current").value;
     const password = document.getElementById("password").value;
     const confirmedPassword = document.getElementById("password-confirm").value;
-    await resetPassword({ currentPassword, password, confirmedPassword });
+    await resetPassword({ password, confirmedPassword });
     document.querySelector(".btn--reset-password").textContent =
       "Update Password";
   });

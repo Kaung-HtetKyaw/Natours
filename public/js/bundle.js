@@ -9118,7 +9118,7 @@ var userDataForm = document.querySelector(".form-user-data");
 var userPassowrdForm = document.querySelector(".form-user-password");
 var forgotPasswordBtn = document.querySelector(".btn--forgot-password");
 var resetPasswordForm = document.querySelector(".form--forgot-password");
-var bookBtn = document.getElementById("book-btn"); // values
+var bookBtn = document.getElementById("book-btn"); // loggin in
 
 if (loginForm) {
   loginForm.addEventListener("submit", function (e) {
@@ -9127,7 +9127,8 @@ if (loginForm) {
     var password = document.getElementById("password").value;
     (0, _login.login)(email, password);
   });
-}
+} // signing up
+
 
 if (signupForm) {
   signupForm.addEventListener("submit", function (e) {
@@ -9143,9 +9144,10 @@ if (signupForm) {
       confirmedPassword: confirmedPassword
     });
   });
-}
+} // logging out
 
-if (logoutBtn) logoutBtn.addEventListener("click", _login.logout);
+
+if (logoutBtn) logoutBtn.addEventListener("click", _login.logout); // updating info
 
 if (userDataForm) {
   userDataForm.addEventListener("submit", function (e) {
@@ -9156,7 +9158,8 @@ if (userDataForm) {
     form.append("photo", document.getElementById("photo").files[0]);
     (0, _updateSettings.updateSettings)(form, "data");
   });
-}
+} // updating password
+
 
 if (userPassowrdForm) {
   userPassowrdForm.addEventListener("submit", /*#__PURE__*/function () {
@@ -9193,7 +9196,8 @@ if (userPassowrdForm) {
       return _ref.apply(this, arguments);
     };
   }());
-}
+} // fogetting password
+
 
 if (forgotPasswordBtn) {
   forgotPasswordBtn.addEventListener("click", /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
@@ -9211,32 +9215,31 @@ if (forgotPasswordBtn) {
       }
     }, _callee2);
   })));
-}
+} // resetting password
+
 
 if (resetPasswordForm) {
   resetPasswordForm.addEventListener("submit", /*#__PURE__*/function () {
     var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(e) {
-      var currentPassword, password, confirmedPassword;
+      var password, confirmedPassword;
       return regeneratorRuntime.wrap(function _callee3$(_context3) {
         while (1) {
           switch (_context3.prev = _context3.next) {
             case 0:
               e.preventDefault();
               document.querySelector(".btn--reset-password").textContent = "Updating";
-              currentPassword = document.getElementById("password-current").value;
               password = document.getElementById("password").value;
               confirmedPassword = document.getElementById("password-confirm").value;
-              _context3.next = 7;
+              _context3.next = 6;
               return (0, _updateSettings.resetPassword)({
-                currentPassword: currentPassword,
                 password: password,
                 confirmedPassword: confirmedPassword
               });
 
-            case 7:
+            case 6:
               document.querySelector(".btn--reset-password").textContent = "Update Password";
 
-            case 8:
+            case 7:
             case "end":
               return _context3.stop();
           }
@@ -9315,7 +9318,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "37811" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "46675" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

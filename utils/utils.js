@@ -1,4 +1,6 @@
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
+const { minutes } = require("./time");
 
 exports.uniqueID = () => {
   return `${Math.random().toString(36).substr(2, 9)}-${Math.random()
@@ -19,4 +21,16 @@ exports.makeMap = (lists) => {
 
 exports.radiusToRadian = (distance, unit) => {
   return unit === "mi" ? distance / 3963.2 : distance / 6378.1;
+};
+
+exports.generateHashedToken = () => {
+  const unhashedToken = crypto.randomBytes(32).toString("hex"); // normal token which will be sent to client
+  const hashedToken = crypto
+    .createHash("sha256")
+    .update(unhashedToken)
+    .digest("hex"); // encrypted whick will be stored in the db
+  const expiresAt = (duration = minutes(10)) => {
+    return Date.now() + duration;
+  }; // will expires after 10 mins
+  return { unhashedToken, hashedToken, expiresAt };
 };

@@ -16,6 +16,30 @@ exports.signUp = catchAsyncError(async (req, res, next) => {
     confirmedPassword: req.body.confirmedPassword,
   }); //! dont save the whole req body
 
+  // generate the verfication token
+  const verficationToken = newUser.generateVerifyToken();
+  await newUser.save({ validateBeforeSave: false });
+  try {
+    // sending mail to the user
+    const url = `${req.protocol}://${req.get(
+      "host"
+    )}/api/v1/verify/${verficationToken}`;
+    await sendVerification(newUser, url, "verification");
+    res.status(200).json({
+      status: "success",
+      message: `Verification email has been sent to your email address`,
+    });
+  } catch (error) {
+    return next(
+      new AppError(
+        `There was an error sending verification email. Please try again`,
+        500
+      )
+    );
+  }
+});
+
+exports.verfiyAccount = catchAsyncError(async (req, res, next) => {
   // sending mail to the user
   const url = `${req.protocol}://${req.get("host")}/me`;
   await new Email(newUser, url).sendWelcome();
@@ -36,6 +60,7 @@ exports.login = catchAsyncError(async (req, res, next) => {
   if (!user || !isCorrectPassword) {
     return next(new AppError("Invalid email or password", 401));
   }
+
   // send response back to client
   createTokenAndSend(user, res, 200, true);
 });
@@ -70,6 +95,9 @@ exports.isAuthenticated = catchAsyncError(async (req, res, next) => {
     return next(
       new AppError("The user belonging to this token no longer exists", 401)
     );
+  }
+  if (user.pending === true) {
+    return;
   }
   // check password is changed after token was issued
   if (user.passwordChangedAfterIssued(decodedToken.iat)) {
@@ -242,4 +270,14 @@ function createTokenAndSend(user, res, statusCode, data = false) {
   res.cookie("jwt", token, cookieOptions);
   // send the response
   res.status(statusCode).json(response);
+}
+
+async function sendVerification(user, url) {
+  try {
+    await new Email(user, url).sendVerfication();
+  } catch (error) {
+    user.verficationToken = undefined;
+    user.verficationExpiresAt = undefined;
+    await user.save({ validateBeforeSave: false });
+  }
 }
