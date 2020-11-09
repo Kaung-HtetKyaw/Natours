@@ -8411,7 +8411,7 @@ exports.showAlert = showAlert;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.logout = exports.signup = exports.login = void 0;
+exports.verify = exports.logout = exports.signup = exports.login = void 0;
 
 var _axios = _interopRequireDefault(require("axios"));
 
@@ -8444,27 +8444,41 @@ var login = /*#__PURE__*/function () {
           case 3:
             result = _context.sent;
 
-            if (result.status = "success") {
-              (0, _alert.showAlert)("success", "You've been logged in successfully.");
-              setTimeout(function () {
-                location.assign("/");
-              }, 1000);
+            if (!(result.status = "success")) {
+              _context.next = 10;
+              break;
             }
 
-            _context.next = 10;
-            break;
+            if (result.data.data) {
+              _context.next = 8;
+              break;
+            }
 
-          case 7:
-            _context.prev = 7;
-            _context.t0 = _context["catch"](0);
-            (0, _alert.showAlert)("error", _context.t0.response.data.message);
+            (0, _alert.showAlert)("success", result.data.message);
+            return _context.abrupt("return");
+
+          case 8:
+            (0, _alert.showAlert)("success", "You've been logged in successfully.");
+            setTimeout(function () {
+              location.assign("/");
+            }, 1000);
 
           case 10:
+            _context.next = 16;
+            break;
+
+          case 12:
+            _context.prev = 12;
+            _context.t0 = _context["catch"](0);
+            console.log(_context.t0.response);
+            (0, _alert.showAlert)("error", _context.t0.response.data.message);
+
+          case 16:
           case "end":
             return _context.stop();
         }
       }
-    }, _callee, null, [[0, 7]]);
+    }, _callee, null, [[0, 12]]);
   }));
 
   return function login(_x, _x2) {
@@ -8493,10 +8507,7 @@ var signup = /*#__PURE__*/function () {
             result = _context2.sent;
 
             if (result.status = "success") {
-              (0, _alert.showAlert)("success", "You've been signed successfully.");
-              setTimeout(function () {
-                location.assign("/");
-              }, 1000);
+              (0, _alert.showAlert)("success", result.data.message);
             }
 
             _context2.next = 10;
@@ -8529,36 +8540,35 @@ var logout = /*#__PURE__*/function () {
       while (1) {
         switch (_context3.prev = _context3.next) {
           case 0:
-            console.log("logout");
-            _context3.prev = 1;
-            _context3.next = 4;
+            _context3.prev = 0;
+            _context3.next = 3;
             return (0, _axios.default)({
               method: "GET",
               url: "http://localhost:8080/api/v1/users/logout"
             });
 
-          case 4:
+          case 3:
             result = _context3.sent;
 
             if (result.status = "success") {
               location.assign("/");
             }
 
-            _context3.next = 12;
+            _context3.next = 11;
             break;
 
-          case 8:
-            _context3.prev = 8;
-            _context3.t0 = _context3["catch"](1);
+          case 7:
+            _context3.prev = 7;
+            _context3.t0 = _context3["catch"](0);
             console.log(_context3.t0.response);
             (0, _alert.showAlert)("error", _context3.t0.response.data.message);
 
-          case 12:
+          case 11:
           case "end":
             return _context3.stop();
         }
       }
-    }, _callee3, null, [[1, 8]]);
+    }, _callee3, null, [[0, 7]]);
   }));
 
   return function logout() {
@@ -8567,6 +8577,56 @@ var logout = /*#__PURE__*/function () {
 }();
 
 exports.logout = logout;
+
+var verify = /*#__PURE__*/function () {
+  var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
+    var token, url, result;
+    return regeneratorRuntime.wrap(function _callee4$(_context4) {
+      while (1) {
+        switch (_context4.prev = _context4.next) {
+          case 0:
+            _context4.prev = 0;
+            token = window.location.href.split("/verify/")[1];
+            url = "http://localhost:8080/api/v1/users/verify/".concat(token);
+            _context4.next = 5;
+            return (0, _axios.default)({
+              method: "PATCH",
+              url: url
+            });
+
+          case 5:
+            result = _context4.sent;
+
+            if (result.status = "success") {
+              (0, _alert.showAlert)("success", "Your account is verified now.");
+              setTimeout(function () {
+                location.assign("/");
+              }, 1000);
+            }
+
+            _context4.next = 13;
+            break;
+
+          case 9:
+            _context4.prev = 9;
+            _context4.t0 = _context4["catch"](0);
+            console.log(_context4.t0.response);
+            (0, _alert.showAlert)("error", _context4.t0.response.data.message);
+
+          case 13:
+          case "end":
+            return _context4.stop();
+        }
+      }
+    }, _callee4, null, [[0, 9]]);
+  }));
+
+  return function verify() {
+    return _ref4.apply(this, arguments);
+  };
+}();
+
+exports.verify = verify;
 },{"axios":"../../node_modules/axios/index.js","./alert":"alert.js"}],"updateSettings.js":[function(require,module,exports) {
 "use strict";
 
@@ -9118,7 +9178,8 @@ var userDataForm = document.querySelector(".form-user-data");
 var userPassowrdForm = document.querySelector(".form-user-password");
 var forgotPasswordBtn = document.querySelector(".btn--forgot-password");
 var resetPasswordForm = document.querySelector(".form--forgot-password");
-var bookBtn = document.getElementById("book-btn"); // loggin in
+var bookBtn = document.getElementById("book-btn");
+var verifyBtn = document.getElementById("btn-verify"); // loggin in
 
 if (loginForm) {
   loginForm.addEventListener("submit", function (e) {
@@ -9283,6 +9344,36 @@ if (bookBtn) {
       return _ref4.apply(this, arguments);
     };
   }());
+}
+
+if (verifyBtn) {
+  verifyBtn.addEventListener("click", /*#__PURE__*/function () {
+    var _ref5 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(e) {
+      var originalTextContent;
+      return regeneratorRuntime.wrap(function _callee5$(_context5) {
+        while (1) {
+          switch (_context5.prev = _context5.next) {
+            case 0:
+              originalTextContent = e.target.textContent;
+              e.target.textContent = "Verifying......";
+              _context5.next = 4;
+              return (0, _login.verify)();
+
+            case 4:
+              e.target.textContent = originalTextContent;
+
+            case 5:
+            case "end":
+              return _context5.stop();
+          }
+        }
+      }, _callee5);
+    }));
+
+    return function (_x4) {
+      return _ref5.apply(this, arguments);
+    };
+  }());
 } // delegate
 
 
@@ -9318,7 +9409,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "46675" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "36343" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

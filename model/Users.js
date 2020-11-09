@@ -64,8 +64,8 @@ const userSchema = new mongoose.Schema(
     verficationExpiresAt: Date,
     pending: {
       type: Boolean,
-      default: true,
       select: false,
+      default: true,
     },
   },
   options
