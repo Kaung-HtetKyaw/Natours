@@ -267,8 +267,8 @@ exports.updatePassword = catchAsyncError(async (req, res, next) => {
   createTokenAndSend(user, res, 200);
 });
 
-function generateToken(id) {
-  return jwt.sign({ id }, process.env.JWT_SECRET, {
+function generateToken(payload) {
+  return jwt.sign(payload, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 }
@@ -287,7 +287,7 @@ function retrieveTokenFromCookieOrHeader(request) {
 }
 
 function createTokenAndSend(user, res, statusCode, data = false) {
-  const token = generateToken(user._id);
+  const token = generateToken({ id: user._id });
   let response = {
     status: "success",
     token,
