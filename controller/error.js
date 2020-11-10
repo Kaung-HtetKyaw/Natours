@@ -79,10 +79,14 @@ function handleCastErrorDB(error) {
 }
 
 function handleDuplicationErrorDB(error) {
+  console.log(error.message);
   const keys = Object.keys(error.keyValue);
   const values = Object.values(error.keyValue);
   const errors = keys.map((key, i) => `${key}:${values[i]}`).join(", ");
   const message = `${errors} is already in use.`;
+  if (error.message.includes("Natours.reviews")) {
+    return new AppError("You can only write one review for a tour", 400);
+  }
   return new AppError(message, 400);
 }
 

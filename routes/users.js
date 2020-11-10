@@ -6,6 +6,8 @@ const rootDir = require("../utils/path");
 const usersController = require(`${rootDir}/controller/users`);
 const authController = require("../controller/auth");
 
+const bookingRouter = require("../routes/bookings");
+
 // auth controller 🔐
 router.post("/signup", authController.signUp);
 router.post("/login", authController.login);
@@ -34,5 +36,8 @@ router
   .get(usersController.getUser)
   .patch(usersController.updateUser) //! dont update password with this route
   .delete(usersController.deleteUser);
+
+// nested route for bookings
+router.use("/:userId/bookings", bookingRouter);
 
 module.exports = router;

@@ -34,3 +34,15 @@ exports.generateHashedToken = () => {
   }; // will expires after 10 mins
   return { unhashedToken, hashedToken, expiresAt };
 };
+
+exports.generateAccessToken = () => {
+  return jwt.sign(payload, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN,
+  });
+};
+
+exports.genereatRefreshToken = () => {
+  return jwt.sign(payload, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
+  });
+};
