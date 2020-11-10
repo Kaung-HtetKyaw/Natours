@@ -69,10 +69,12 @@ block content
       .picture-box
         img.picture-box__img(src=`/img/tours/${img}`, alt=`The Park Camper Tour ${i + 1}`, class=`picture-box__img--${i + 1}`)
 
+
   section.section-map
     #map(data-locations=`${JSON.stringify(tour.locations)}`)
-
-  if tour.reviews.lenght>0
+  
+  - const reviewsExist = tour.reviews.length > 0
+  if reviewsExist==true
     section.section-reviews
       .reviews
         each review in tour.reviews

@@ -1,5 +1,5 @@
 const express = require("express");
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 const bookingsController = require("../controller/bookings");
 const authController = require("../controller/auth");
 
@@ -7,7 +7,7 @@ router.use(authController.isAuthenticated);
 
 router.get("/checkout-session/:tourId", bookingsController.getCheckoutSession);
 
-router.use(authController.isAuthorized("admin,lead"));
+router.use(authController.isAuthorized("admin", "lead"));
 
 router.get("/", bookingsController.getAllBookings);
 router

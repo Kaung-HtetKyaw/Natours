@@ -6,6 +6,7 @@ const rootDir = require("../utils/path");
 const toursController = require(`${rootDir}/controller/tours`);
 const authController = require("../controller/auth");
 const reviewRouter = require("../routes/reviews");
+const bookingRouter = require("../routes/bookings");
 
 //posts routes 📰
 router.route("/top-5-cheap").get(toursController.getAllTours);
@@ -50,5 +51,6 @@ router
     toursController.deleteTour
   );
 router.use("/:tourId/reviews", reviewRouter);
+router.use("/:tourId/bookings", bookingRouter);
 
 module.exports = router;
