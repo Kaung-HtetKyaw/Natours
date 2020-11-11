@@ -15,11 +15,10 @@ export const login = async (email, password) => {
         showAlert("success", result.data.message);
         return;
       }
-      console.log(result);
       showAlert("success", "You've been logged in successfully.");
-      // setTimeout(() => {
-      //   location.assign("/");
-      // }, 1000);
+      setTimeout(() => {
+        location.assign("/");
+      }, 1000);
     }
   } catch (error) {
     console.log(error.response);
