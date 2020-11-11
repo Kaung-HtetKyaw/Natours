@@ -4,8 +4,8 @@ export const updateSettings = async (data, type) => {
   try {
     const url =
       type === "password"
-        ? "http://localhost:8080/api/v1/users/updatePassword"
-        : "http://localhost:8080/api/v1/users/updateMe";
+        ? "/api/v1/users/updatePassword"
+        : "/api/v1/users/updateMe";
 
     const res = await axios({
       method: "PATCH",
@@ -25,7 +25,7 @@ export const updateSettings = async (data, type) => {
 
 export const forgotPassword = async (email) => {
   try {
-    const url = "http://localhost:8080/api/v1/users/forgotPassword";
+    const url = "/api/v1/users/forgotPassword";
     const res = await axios({
       method: "POST",
       url,
@@ -48,7 +48,7 @@ export const forgotPassword = async (email) => {
 export const resetPassword = async (data) => {
   try {
     const token = window.location.href.split("/resetPassword/")[1];
-    const url = `http://localhost:8080/api/v1/users/resetPassword/${token}`;
+    const url = `/api/v1/users/resetPassword/${token}`;
     const res = await axios({
       method: "PATCH",
       url,

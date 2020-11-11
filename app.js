@@ -7,6 +7,7 @@ const xss = require("xss-clean");
 const hpp = require("hpp");
 const path = require("path");
 const cookie_parser = require("cookie-parser");
+const compression = require("compression");
 
 const AppError = require("./utils/api/AppError");
 const { minutes } = require("./utils/time");
@@ -57,6 +58,7 @@ app.use(
     whitelist: whiteListedQueryParams,
   })
 );
+app.use(compression());
 // app.use((req, res, next) => {
 //   console.log(req.cookies);
 //   next();
