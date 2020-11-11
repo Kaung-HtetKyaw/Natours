@@ -1,6 +1,6 @@
 # Natours Tour
 
-> My astounding Nuxt.js project
+> My astounding Nodejs project
 
 ## Build Setup
 
