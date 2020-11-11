@@ -8458,10 +8458,10 @@ var login = /*#__PURE__*/function () {
             return _context.abrupt("return");
 
           case 8:
-            (0, _alert.showAlert)("success", "You've been logged in successfully.");
-            setTimeout(function () {
-              location.assign("/");
-            }, 1000);
+            console.log(result);
+            (0, _alert.showAlert)("success", "You've been logged in successfully."); // setTimeout(() => {
+            //   location.assign("/");
+            // }, 1000);
 
           case 10:
             _context.next = 16;
@@ -9409,7 +9409,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "36343" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "39623" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
