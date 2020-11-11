@@ -4,7 +4,7 @@ export const login = async (email, password) => {
   try {
     const result = await axios({
       method: "POST",
-      url: "http://localhost:8080/api/v1/users/login",
+      url: "/api/v1/users/login",
       data: {
         email,
         password,
@@ -30,7 +30,7 @@ export const signup = async (signUpData) => {
   try {
     const result = await axios({
       method: "POST",
-      url: "http://localhost:8080/api/v1/users/signup",
+      url: "/api/v1/users/signup",
       data: signUpData,
     });
     if ((result.status = "success")) {
@@ -45,7 +45,7 @@ export const logout = async () => {
   try {
     const result = await axios({
       method: "GET",
-      url: "http://localhost:8080/api/v1/users/logout",
+      url: "/api/v1/users/logout",
     });
     if ((result.status = "success")) {
       location.assign("/");
@@ -59,7 +59,7 @@ export const logout = async () => {
 export const verify = async () => {
   try {
     const token = window.location.href.split("/verify/")[1];
-    const url = `http://localhost:8080/api/v1/users/verify/${token}`;
+    const url = `/api/v1/users/verify/${token}`;
     const result = await axios({
       method: "PATCH",
       url,
