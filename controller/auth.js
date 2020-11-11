@@ -143,6 +143,7 @@ exports.isAuthenticated = catchAsyncError(async (req, res, next) => {
   // provide user information for next middlewares and handlers
   req.user = user;
   res.locals.user = user;
+  console.log(res.locals);
   next();
 });
 
@@ -178,6 +179,7 @@ exports.isLoggedIn = async (req, res, next) => {
       }
       // provide user information for next middlewares and handlers
       res.locals.user = user;
+      console.log(req.locals);
       return next();
     }
     return next();
